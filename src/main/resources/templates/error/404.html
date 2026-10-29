@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Không tìm thấy</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>404 — Không tìm thấy</h1>
+
+        <!-- ${path}: địa chỉ người dùng vừa mở -->
+        <p>Không có gì ở địa chỉ <code th:text="${path}">/abc</code>.</p>
+
+        <!-- ${message}: nội dung exception, ví dụ "không tìm thấy category id 999" -->
+        <p th:if="${message}">Chi tiết: <span th:text="${message}">...</span></p>
+
+        <p>
+            <a class="btn" th:href="@{/products}">Về trang sản phẩm</a>
+            <a th:href="@{/categories}">Danh mục</a>
+        </p>
+    </section>
+</body>
+</html>

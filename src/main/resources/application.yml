@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: demo
+
+  # Cấu hình kết nối DB. Các giá trị lấy từ biến môi trường (do docker-compose truyền vào).
+  # Khi chạy bằng docker-compose, host của DB là "mysql" (tên service), không phải "localhost".
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:demo_db}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${DB_USERNAME:demo_user}
+    password: ${DB_PASSWORD:demo_pass}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # update: tự động tạo/cập nhật bảng theo entity. Tiện cho lúc học.
+      # Khi lên production nên đổi sang "validate" và dùng công cụ migration (Flyway/Liquibase).
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+  data:
+    mongodb:
+      # mongodb://user:pass@host:port/tên_database?authSource=admin
+      # authSource=admin: user root do MONGO_INITDB_ROOT_* tạo ra nằm trong database "admin",
+      # không nằm trong demo_mongo → thiếu tham số này là báo "Authentication failed"
+      uri: mongodb://${MONGO_USERNAME:demo_user}:${MONGO_PASSWORD:demo_pass}@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/${MONGO_DB:demo_mongo}?authSource=admin
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+# Ghi log ra file (ngoài việc vẫn in ra console như cũ).
+logging:
+  file:
+    # Đường dẫn TƯƠNG ĐỐI → tính từ thư mục đang chạy app.
+    # Chế độ dev: /app là project được mount → file nằm ở ./logs/app.log trên máy bạn.
+    # Muốn để chỗ khác: đặt biến môi trường LOG_FILE
+    name: ${LOG_FILE:logs/app.log}
+  logback:
+    rollingpolicy:
+      # File đầy 10MB hoặc sang ngày mới → nén file cũ thành app.log.2026-10-29.0.gz, mở file mới
+      max-file-size: 10MB
+      # Chỉ giữ log của 7 ngày gần nhất, cũ hơn thì tự xoá
+      max-history: 7
+  level:
+    # Mức log mặc định: INFO (bỏ qua DEBUG, TRACE)
+    root: INFO
+    # Code của mình (com.example.demo...) thì hiện cả log.debug(...) để dễ debug
+    com.example.demo: DEBUG
+
+# Bật endpoint kiểm tra sức khỏe: http://localhost:8080/actuator/health
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      # Mặc định chỉ trả {"status":"UP"}. "always" → liệt kê trạng thái từng thành phần: db, mongo, redis...
+      show-details: always
+
+app:
+  upload:
+    # Thư mục lưu file người dùng upload.
+    # Đường dẫn TƯƠNG ĐỐI → tính từ thư mục đang chạy app (Docker: /app → /app/uploads).
+    # Muốn để chỗ khác: đặt biến môi trường UPLOAD_DIR, ví dụ /var/lib/demo/uploads
+    dir: ${UPLOAD_DIR:uploads}
+  product:
+    # Ảnh khi sản phẩm chưa có ảnh. Tương đối so với src/main/resources/static/
+    # → nằm trong source, đóng gói luôn vào .jar, deploy đi đâu cũng có
+    default-image: images/product-default.jpg

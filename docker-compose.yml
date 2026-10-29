@@ -1,0 +1,43 @@
+services:
+  # ----- Database MySQL -----
+  mysql:
+    image: mysql:8.4
+    container_name: demo-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-demo_db}
+      MYSQL_USER: ${DB_USERNAME:-demo_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-demo_pass}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_pass}
+    ports:
+      # Cổng 3313 ở máy bạn -> 3306 trong container (tránh đụng MySQL cài sẵn nếu có)
+      - "3313:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      # App chỉ khởi động sau khi DB đã sẵn sàng nhận kết nối
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_pass}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ----- Ứng dụng Spring Boot -----
+  app:
+    build: .
+    container_name: demo-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # "mysql" là tên service ở trên -> chính là hostname trong mạng docker
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-demo_db}
+      DB_USERNAME: ${DB_USERNAME:-demo_user}
+      DB_PASSWORD: ${DB_PASSWORD:-demo_pass}
+    ports:
+      - "8093:8080"
+
+volumes:
+  mysql_data:

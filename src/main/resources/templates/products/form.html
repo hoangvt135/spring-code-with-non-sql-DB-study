@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Sản phẩm</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1 th:text="${product.id == 0} ? 'Thêm sản phẩm' : 'Sửa sản phẩm'">Sản phẩm</h1>
+
+        <!-- enctype="multipart/form-data": BẮT BUỘC khi form có <input type="file">.
+             Thiếu nó, trình duyệt chỉ gửi TÊN file chứ không gửi nội dung → imageFile luôn rỗng -->
+        <form th:action="@{/products/save}" th:object="${product}" method="post"
+              enctype="multipart/form-data">
+            <input type="hidden" th:field="*{id}">
+            <label>Tên sản phẩm</label>
+            <input class="form_controll" type="text" th:field="*{name}" required>
+            <label>Giá</label>
+            <input class="form_controll" type="number" step="1000" th:field="*{price}">
+            <label>Danh mục</label>
+            <select class="form_controll" name="categoryId">
+                <option value="">-- Chưa chọn --</option>
+                <option th:each="c : ${categories}"
+                        th:value="${c.id}"
+                        th:text="${c.name}"
+                        th:selected="${product.category?.id == c.id}">Tên danh mục</option>
+            </select>
+                        <label>Mô tả</label>
+            <textarea class="form_controll" th:field="*{description}" rows="4" maxlength="2000"></textarea>
+
+            <label>Ảnh sản phẩm</label>
+            <!-- Ảnh hiện tại (sản phẩm mới / chưa có ảnh → ảnh mặc định) -->
+            <img class="preview" th:src="@{${@productService.imageUrl(product)}}" alt="Ảnh hiện tại">
+            <input class="form_controll" type="file" name="imageFile" accept=".jpg,.jpeg,.png,.gif,.webp">
+            <small class="muted">Bỏ trống = giữ ảnh hiện tại. Nhận jpg, png, gif, webp, tối đa 5MB.</small>
+            
+            <button type="submit">Lưu</button>
+            <a th:href="@{/products}">Huỷ</a>
+        </form>
+    </section>
+</body>
+</html>

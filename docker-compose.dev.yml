@@ -1,0 +1,123 @@
+# =====================================================================
+#  CHẾ ĐỘ DEV — HOT RELOAD
+#  Khác với docker-compose.yml (prod, phải build lại image mỗi lần sửa),
+#  file này mount code từ máy bạn vào container và chạy bằng Gradle.
+#  Khi bạn lưu file .java, DevTools tự biên dịch lại & khởi động lại app
+#  trong vài giây — KHÔNG cần build lại Docker image.
+#
+#  Chạy:   docker compose -f docker-compose.dev.yml up
+#  Dừng:   Ctrl + C   (hoặc: docker compose -f docker-compose.dev.yml down)
+# =====================================================================
+
+services:
+  # ----- Database MySQL (giống prod, dùng chung dữ liệu) -----
+  mysql:
+    image: mysql:8.4
+    container_name: demo-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-demo_db}
+      MYSQL_USER: ${DB_USERNAME:-demo_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-demo_pass}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_pass}
+    ports:
+      - "3313:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_pass}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  mongo:
+    image: mongo:8.0
+    container_name: demo-mongo
+    restart: unless-stopped
+    environment:
+      # Tạo user "root" của MongoDB ở lần khởi động ĐẦU TIÊN (khi volume còn trống).
+      # User này nằm trong database "admin" → URI kết nối phải có ?authSource=admin (Bước 4)
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-demo_user}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-demo_pass}
+    ports:
+      # 27018 ở máy bạn -> 27017 trong container (tránh đụng MongoDB cài sẵn nếu có)
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      # Lệnh "ping" của MongoDB, không cần đăng nhập
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  redis:
+    image: redis:7.4
+    container_name: demo-redis
+    restart: unless-stopped
+    ports:
+      # 6380 ở máy bạn -> 6379 trong container (tránh đụng Redis của dự án khác)
+      - "6380:6379"
+    volumes:
+      # Redis định kỳ chụp dữ liệu RAM xuống /data → restart container không mất sạch
+      - redis_data:/data
+    healthcheck:
+      # redis-cli ping → trả "PONG" là sống
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  # ----- App chạy bằng Gradle (hot reload) -----
+  app-dev:
+    image: gradle:8.11-jdk21
+    container_name: demo-app-dev
+    # Chạy dưới user 1000:1000 để file build/ tạo ra thuộc quyền bạn, không phải root
+    user: "1000:1000"
+    working_dir: /app
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-demo_db}
+      DB_USERNAME: ${DB_USERNAME:-demo_user}
+      DB_PASSWORD: ${DB_PASSWORD:-demo_pass}
+      GRADLE_USER_HOME: /home/gradle/.gradle
+      MONGO_HOST: mongo
+      MONGO_PORT: 27017
+      MONGO_DB: ${MONGO_DB:-demo_db}
+      MONGO_USERNAME: ${MONGO_USERNAME:-demo_user}
+      MONGO_PASSWORD: ${MONGO_PASSWORD:-demo_pass}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8093:8080"
+    volumes:
+      # Mount toàn bộ project vào container -> sửa code trên máy = đổi trong container ngay
+      - ./:/app
+      # Cache thư viện Gradle để lần chạy sau nhanh hơn (không tải lại)
+      - gradle_cache:/home/gradle/.gradle
+      # Thư mục .gradle/ RIÊNG cho container (nằm trong RAM, không đụng tới .gradle/ trên máy bạn).
+      # Lý do: VSCode (extension Java/Gradle) trên máy host cũng chạy Gradle và khoá .gradle/ của project;
+      # Gradle trong container không "nói chuyện" được với Gradle ngoài host để xin nhả khoá
+      # -> chờ mãi rồi chết (lỗi "Timeout waiting to lock ... buildOutputCleanup").
+      - type: tmpfs
+        target: /app/.gradle
+        tmpfs:
+          mode: 01777
+    # Chạy 2 việc song song:
+    #  1) classes --continuous : theo dõi thay đổi, tự biên dịch lại .java VÀ copy lại
+    #     template/resource (task 'classes' = compileJava + processResources)
+    #  2) bootRun              : chạy app; DevTools thấy file mới trong classpath -> reload
+    command: >
+      sh -c "gradle classes --continuous -x test --console=plain -q &
+             exec gradle bootRun --console=plain"
+
+volumes:
+  mysql_data:
+  gradle_cache:
+  mongo_data:
+  redis_data:

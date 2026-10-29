@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    // Dùng Java 21 (LTS). Docker sẽ build với đúng phiên bản này,
+    // nên không phụ thuộc vào Java 25 đang cài trên máy bạn.
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Web: tạo REST API / controller
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // JPA: làm việc với DB qua entity (dùng khi bạn thực hành CRUD)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Validation: kiểm tra dữ liệu đầu vào (@Valid)
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // Driver kết nối MySQL
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    // Actuator: cung cấp endpoint /actuator/health để kiểm tra app sống
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // DevTools: tự khởi động lại app khi code thay đổi (hot reload). Chỉ dùng khi dev.
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0'
+    
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

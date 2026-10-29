@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Danh sách danh mục</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>Danh mục</h1>
+        <p><a class="btn" th:href="@{/categories/new}">+ Thêm danh mục</a></p>
+
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Tên</th><th>Số sản phẩm</th><th>Hành động</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="c : ${categories}">
+                    <td th:text="${c.id}">1</td>
+                    <td th:text="${c.name}">Tên</td>
+                    <!-- c.products là List<Product> nhờ @OneToMany (bài 06) -->
+                    <td th:text="${c.products.size()}">0</td>
+                    <td>
+                        <a th:href="@{/categories/{id}/edit(id=${c.id})}">Sửa</a> |
+                        <a th:href="@{/categories/{id}/delete(id=${c.id})}"
+                           onclick="return confirm('Xoá danh mục này?')">Xoá</a>
+                    </td>
+                </tr>
+                <tr th:if="${categories.isEmpty()}">
+                    <td colspan="4">Chưa có danh mục nào.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>

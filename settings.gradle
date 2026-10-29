@@ -1,0 +1,12 @@
+// Nơi Gradle tải PLUGIN (khác với khối repositories trong build.gradle - nơi tải THƯ VIỆN).
+// Mặc định Gradle chỉ dùng Gradle Plugin Portal, nhưng máy chủ file của nó
+// (plugins-artifacts.gradle.org) đang bị chặn ở mạng này -> lỗi "Remote host terminated the handshake".
+// Spring Boot và dependency-management đều có sẵn trên Maven Central, nên ưu tiên lấy từ đó.
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'demo'

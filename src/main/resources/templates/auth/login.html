@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Đăng nhập</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <h1>Đăng nhập</h1>
+
+        <!-- ${param.xxx}: đọc tham số trên URL. /login?error → param.error có giá trị -->
+        <p th:if="${param.error}" class="alert alert-error">Sai tên đăng nhập hoặc mật khẩu.</p>
+        <p th:if="${param.logout}" class="alert alert-ok">Bạn đã đăng xuất.</p>
+        <p th:if="${param.registered}" class="alert alert-ok">Đăng ký thành công, mời đăng nhập.</p>
+
+        <!-- Gửi tới POST /login: Spring Security nhận, không phải controller của mình -->
+        <form th:action="@{/login}" method="post">
+            <!-- name PHẢI là "username" và "password": Spring Security đọc đúng 2 tên này -->
+            <label>Tên đăng nhập</label>
+            <input type="text" name="username" required autofocus>
+
+            <label>Mật khẩu</label>
+            <input type="password" name="password" required>
+
+            <button type="submit">Đăng nhập</button>
+        </form>
+
+        <p>Chưa có tài khoản? <a th:href="@{/register}">Đăng ký</a></p>
+    </section>
+</body>
+</html>

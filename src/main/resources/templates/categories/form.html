@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Danh mục</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <!-- id == null → đang thêm mới; có id → đang sửa -->
+        <h1 th:text="${category.id == null} ? 'Thêm danh mục' : 'Sửa danh mục'">Danh mục</h1>
+
+        <form th:action="@{/categories/save}" th:object="${category}" method="post">
+            <!-- Ô ẩn giữ id: thêm mới thì rỗng, sửa thì có số -->
+            <input type="hidden" th:field="*{id}">
+
+            <label>Tên danh mục</label>
+            <input type="text" th:field="*{name}" required>
+
+            <button type="submit">Lưu</button>
+            <a th:href="@{/categories}">Huỷ</a>
+        </form>
+    </section>
+</body>
+</html>

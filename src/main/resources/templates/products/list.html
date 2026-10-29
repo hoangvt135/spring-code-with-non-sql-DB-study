@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{fragments/layout}">
+<head>
+    <title>Danh sách sản phẩm</title>
+</head>
+<body>
+    <!-- Chỉ phần bên trong layout:fragment="content" được dùng, phần bọc ngoài bị bỏ -->
+    <section layout:fragment="content">
+        <h1>Sản phẩm</h1>
+        <p><a class="btn" th:href="@{/products/new}">+ Thêm sản phẩm</a></p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ảnh</th>
+                    <th>Tên</th>
+                    <th>Giá</th>
+                    <th>Danh mục</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${products}">
+                    <td th:text="${p.id}">1</td>
+                    <td><img class="thumb" th:src="@{${@productService.imageUrl(p)}}" th:alt="${p.name}" loading="lazy"></td>
+                    <td th:text="${p.name}">Tên</td>
+                    <td th:text="${p.price}">0</td>
+                    <td th:text="${p.category?.name}">Danh mục</td>
+                    <td>
+                        <a th:href="@{/products/{id}/edit(id=${p.id})}">Sửa</a> |
+                        <a th:href="@{/products/{id}/delete(id=${p.id})}"
+                           onclick="return confirm('Xoá sản phẩm này?')">Xoá</a>
+                    </td>
+                </tr>
+                <tr th:if="${products.isEmpty()}">
+                    <td colspan="4">Chưa có sản phẩm nào.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>

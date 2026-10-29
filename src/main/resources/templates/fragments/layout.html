@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <!-- $CONTENT_TITLE = <title> mà trang con khai báo -->
+    <title layout:title-pattern="$CONTENT_TITLE">Demo</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+    <header>
+        <nav>
+            <span class="nav-user" sec:authorize="isAuthenticated()">
+                <a th:href="@{/products}">Sản phẩm</a>
+                <a th:href="@{/categories}">Danh mục</a>
+            </span>
+
+            <!-- ⬇️ thêm: chỉ hiện khi ĐÃ đăng nhập -->
+            <span class="nav-user" sec:authorize="isAuthenticated()">
+                Xin chào, <b sec:authentication="name">user</b>
+                <!-- Đăng xuất phải là POST (có CSRF token), không dùng thẻ <a> được -->
+                <form th:action="@{/logout}" method="post" class="inline">
+                    <button type="submit">Đăng xuất</button>
+                </form>
+            </span>
+
+        </nav>
+        <hr>
+    </header>
+
+    <!-- 👇 Ô TRỐNG: phần lõi của mỗi trang con sẽ được chèn vào đây -->
+    <main layout:fragment="content">
+        <p>Nội dung trang sẽ được chèn vào đây.</p>
+    </main>
+
+    <footer>
+        <hr>
+        <p>© 2026 Demo Spring Boot — học vừa làm</p>
+    </footer>
+</body>
+</html>
