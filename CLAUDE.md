@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Bối cảnh dự án
 
 Đây là project **học tập** (Spring Boot 3.4 + Java 21 + MySQL 8.4 + Docker), không phải sản phẩm thật.
-Người dùng đang **vừa học vừa làm** theo giáo trình trong [docs/](docs/) (01 → 11), viết bằng tiếng Việt.
+Người dùng đang **vừa học vừa làm** theo giáo trình trong [docs/](docs/) (01 → 16, có thêm bài 15.5), viết bằng tiếng Việt. Lộ trình tiếp theo và tiến độ: xem [docs/ke-hoach.md](docs/ke-hoach.md).
 
 Hệ quả cho cách làm việc:
 - **Trả lời và comment code bằng tiếng Việt.** Toàn bộ README, docs và comment trong source đều là tiếng Việt.
@@ -36,6 +36,16 @@ Khi người dùng **hỏi về kiến thức xuất hiện trong bài học** (
 - Câu hỏi về lỗi riêng của code đang viết, về thao tác (chạy lệnh, sửa file...) hoặc những việc chỉ liên quan tới cuộc trò chuyện hiện tại thì **không** ghi vào đây.
 - Áp dụng quy tắc tài liệu ở trên: chỉ ghi file local, không có bản online.
 
+## 🗓️ Kế hoạch đang chờ: `docs/ke-hoach.md` (đọc đầu mỗi session)
+
+Session có thể bị mất, nên mọi việc **đã lên kế hoạch mà chưa làm ngay** phải được ghi vào [docs/ke-hoach.md](docs/ke-hoach.md), để session sau làm tiếp được.
+
+- **Đầu session**, khi người dùng nhờ việc liên quan tới bài học, đọc file này trước để biết lộ trình và các việc đang chờ (ví dụ "viết bài 17" đã có phạm vi chốt sẵn ở đó).
+- **Khi nào phải ghi:** khi đã cùng người dùng chốt một việc nhưng để làm sau. Ví dụ: "viết bài 17 sau khi xong bài 16", một yêu cầu mới làm được một phần, hay một câu hỏi còn chờ người dùng trả lời. Mỗi việc là một mục `###` dưới phần **Đang chờ**, ghi: ngày lên kế hoạch, làm khi nào, phạm vi đã chốt, và những gì còn phải hỏi.
+- **Làm xong việc nào thì xoá hẳn mục đó** khỏi file, không để lại dấu ✅. Hết việc thì phần **Đang chờ** chỉ còn chữ *(Không có việc nào đang chờ)*. Mục đích là để kế hoạch cũ không bị nhầm với kế hoạch mới.
+- Phần "Tiến độ code của người học" trong file chỉ là ảnh chụp tại một ngày: kiểm tra lại code thật trước khi dựa vào, và cập nhật lại khi thấy đã cũ.
+- Đây là file ngoại lệ **không đánh số** (giống `common_knowledge.md`). Áp dụng quy tắc tài liệu: chỉ ghi file local.
+
 ## Lệnh thường dùng
 
 App **luôn chạy bằng Docker**; máy host không cần cài Java hay Gradle.
@@ -63,9 +73,9 @@ docker exec -it demo-mysql mysql -u demo_user -pdemo_pass demo_db
 
 **Hiện chưa có thư mục `src/test/` nào** — `./gradlew test` không chạy gì cả. Nếu cần test thì phải tạo `src/test/java/...` trước (JUnit 5 + `spring-boot-starter-test` đã có sẵn trong `build.gradle`).
 
-Cổng: app `8093` → 8080 trong container; MySQL `3313` → 3306. Trong mạng Docker, host của DB là `mysql` (tên service), không phải `localhost`.
+Cổng: app `8093` → 8080 trong container; MySQL `3313` → 3306; MongoDB `27018` → 27017; Redis `6380` → 6379. Trong mạng Docker, host của DB là tên service (`mysql`, `mongo`, `redis`), không phải `localhost`.
 
-`docker-compose.dev.yml` và `docker-compose.yml` **dùng chung container name `demo-mysql` và cùng cổng 8093** → không chạy đồng thời được, phải `down` cái này trước khi `up` cái kia.
+`docker-compose.dev.yml` và `docker-compose.yml` **dùng chung container name `demo-mysql` và cùng cổng 8093** → không chạy đồng thời được, phải `down` cái này trước khi `up` cái kia. Hai file nằm cùng thư mục nên Docker coi là **cùng project `java_code`**: dùng chung network và volume `java_code_mysql_data`. Vì thế `docker compose down -v` (file thường) cũng xoá dữ liệu MySQL của chế độ dev. Hiện **chỉ `docker-compose.dev.yml` có `mongo` và `redis`** (bài 14). `docker-compose.yml` chưa được thêm.
 
 ## Kiến trúc
 
@@ -76,10 +86,18 @@ com.example.demo
 ├── DemoApplication.java          # @SpringBootApplication
 ├── controller/HelloController.java   # "/" và "/hello" — chỉ để kiểm tra app sống
 ├── product/    Product, ProductRepository, ProductService, ProductController, ProductViewController
-└── category/   Category, CategoryRepository, CategoryService, CategoryController
+├── category/   Category, CategoryRepository, CategoryService, CategoryController, CategoryViewController
+├── user/       User, UserRepository, UserService (UserDetailsService), AuthController   # bài 12
+├── config/     SecurityConfig (bài 12), WebConfig (map /uploads/**, bài 15)
+├── common/     NotFoundException (@ResponseStatus 404, bài 10)
+├── storage/    FileStorageService — class DUY NHẤT biết file upload nằm đâu (bài 15)
+├── seed/       DataSeeder — CommandLineRunner tạo admin + dữ liệu mẫu (bài 13, 15.5)
+└── nosql/      NoSqlConnectionCheck — thử kết nối Mongo/Redis lúc khởi động (bài 14)
 ```
 
-Mỗi feature là một package tự chứa đủ 4 tầng. **Khi thêm model mới, làm theo đúng khuôn này**: tạo package mới cạnh `product/`, `category/` với đủ Entity → Repository → Service → Controller.
+Bài 16 sẽ thêm `stats/ProductStatsService` (class duy nhất làm việc với Redis cho lượt xem), theo đúng khuôn của `storage/`.
+
+Mỗi feature là một package tự chứa đủ 4 tầng. Các package hỗ trợ (`storage/`, `seed/`, `nosql/`, `stats/`) thì không cần đủ 4 tầng. **Khi thêm model mới, làm theo đúng khuôn này**: tạo package mới cạnh `product/`, `category/` với đủ Entity → Repository → Service → Controller.
 
 Luồng một request: `Controller → Service → Repository (Spring Data JPA) → MySQL`. Controller không được gọi thẳng Repository; logic nghiệp vụ (validate giá âm, ném lỗi khi không tìm thấy...) nằm ở Service. Dependency injection qua **constructor**, không dùng `@Autowired` field.
 
@@ -94,25 +112,22 @@ Luồng một request: `Controller → Service → Repository (Spring Data JPA) 
 | Đường dẫn | `/api/products` | `/products` |
 | Trả về | JSON (entity) | tên template, ví dụ `"products/list"` |
 
-Cả hai dùng chung `ProductService`. `Category` hiện **chỉ có REST API**, chưa có view controller — nhưng `layout.html` đã có link `/categories` trong nav, nên bấm vào sẽ 404 cho tới khi ai đó viết `CategoryViewController`.
+Cả hai dùng chung `ProductService`. `Category` cũng có đủ cặp `CategoryController` / `CategoryViewController` (bài 08).
 
-`ProductViewController.save()` phân biệt thêm/sửa bằng `product.getId() == 0` (vì `Product.id` là `long` nguyên thuỷ, không phải `Long`). Nếu đổi kiểu `id` sang `Long` thì logic này sẽ NPE — nhớ sửa kèm.
+`ProductService.save(data, imageFile)` (bài 15 đã chuyển logic này từ controller vào service) phân biệt thêm/sửa bằng `data.getId() == 0` (vì `Product.id` là `long` nguyên thuỷ, không phải `Long`). Nếu đổi kiểu `id` sang `Long` thì logic này sẽ NPE — nhớ sửa kèm.
+
+Mọi trang đều bắt đăng nhập (`anyRequest().authenticated()` trong `SecurityConfig`), trừ `/login`, `/register`, `/css/**`, `/images/**`, `/uploads/**`, `/error`, `/actuator/health`. REST API dùng HTTP Basic (`curl -u admin:admin123`).
 
 ### Schema DB và quan hệ
 
-`spring.jpa.hibernate.ddl-auto: update` — **bảng do Hibernate tự sinh từ entity, không có file migration nào**. Sửa entity là bảng tự đổi theo (chỉ thêm, không xoá cột cũ). Khi cần reset sạch: `docker compose down -v`.
+`spring.jpa.hibernate.ddl-auto: update` — **bảng do Hibernate tự sinh từ entity, không có file migration nào**. Sửa entity là bảng tự đổi theo (chỉ thêm, không xoá cột cũ, không sửa cột đã có). Khi cần reset sạch: `docker compose -f docker-compose.dev.yml down -v`, hoặc script `scripts/reset-db.sh` của [bài 15.5](docs/15.5-reset-du-lieu-va-chay-lai-seeder.md) (người học chưa tạo script này). Sau khi reset, `DataSeeder` tạo lại `admin` / `admin123` và dữ liệu mẫu. **Mỗi lần thêm trường vào entity thì nhớ cập nhật seeder.**
+
+Dữ liệu ngoài MySQL: ảnh upload nằm ở thư mục `uploads/` (DB chỉ lưu tên file, bài 15). MongoDB và Redis là **DB phụ** (bài 14 trở đi). Giữa chúng và MySQL **không có transaction chung**, nên xoá dữ liệu ở MySQL thì phải tự dọn bên kia.
 
 `Category 1 — N Product`: `Product` giữ `@ManyToOne` + `@JoinColumn(name = "category_id")` (phía chủ), `Category` giữ `@OneToMany(mappedBy = "category")`. Phía `Category.products` **bắt buộc có `@JsonIgnore`** để chặn vòng lặp JSON vô tận khi serialize — xem [docs/06-quan-he-model.md](docs/06-quan-he-model.md) bước 3. Khi thêm quan hệ 2 chiều mới, làm y hệt.
 
-Lưu ý: `ProductService.update()` hiện **không copy `category`** sang, nên cập nhật product qua `PUT /api/products/{id}` sẽ làm mất category đang gán.
-
-### Tầng view (Thymeleaf) — đang chuyển dở dang
+### Tầng view (Thymeleaf)
 
 Template nằm ở `src/main/resources/templates/`, tên trả về từ controller ứng với đường dẫn tương đối (`"products/list"` → `templates/products/list.html`).
 
-Trạng thái hiện tại của [docs/07-tach-giao-dien-fragment.md](docs/07-tach-giao-dien-fragment.md) (bài đang học dở):
-- ✅ `templates/fragments/layout.html` (layout tổng, có `layout:fragment="content"`) và `static/css/app.css` đã tạo.
-- ❌ `build.gradle` **chưa có** `nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.4.0` → namespace `layout:` chưa hoạt động.
-- ❌ `products/list.html` và `products/form.html` vẫn là trang HTML đầy đủ với `<style>` nội tuyến, chưa dùng layout.
-
-Nếu người dùng nhờ "làm tiếp bài 07", đây chính là 3 việc còn lại.
+Mọi trang con dùng layout tổng `fragments/layout.html` qua thymeleaf-layout-dialect (`layout:decorate`, `layout:fragment="content"`, bài 07). CSS chung nằm ở `static/css/app.css`, không viết `<style>` nội tuyến. Ảnh tĩnh của lập trình viên nằm ở `static/images/` (ví dụ ảnh mặc định `product-default.jpg`). Template gọi được bean Spring trực tiếp, ví dụ `${@productService.imageUrl(p)}`.

@@ -53,6 +53,10 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedSampleData() {
+        if (categoryRepository.count() > 0) {
+            log.info("[Seed] Bảng category đã có dữ liệu → bỏ qua dữ liệu mẫu");
+            return;
+        }
         Category phone = createCategory("Điện thoại");
         Category keyboard = createCategory("Bàn phím");
         Category mouse = createCategory("Chuột");
