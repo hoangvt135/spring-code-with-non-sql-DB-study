@@ -124,6 +124,31 @@ public class ProductService {
 
 **Điểm quan trọng:** logic nghiệp vụ (như "giá không âm") nằm ở đây, KHÔNG nằm ở controller.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Các hàm dưới đây **không phải do mình viết**. `findAll`, `findById`, `save`, `deleteById` có sẵn trong thư viện **Spring Data JPA**: `ProductRepository` được thừa hưởng chúng nhờ dòng `extends JpaRepository<Product, Long>` ở Bước 2. `Optional` và các class lỗi (`RuntimeException`...) thì có sẵn trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `repository.findAll()` | Spring Data JPA, thừa kế từ `JpaRepository` | Lấy mọi dòng trong bảng: `SELECT ... FROM product` | `List<Product>`. Bảng rỗng thì list rỗng, **không** phải `null` |
+| `repository.findById(id)` | Spring Data JPA, thừa kế từ `JpaRepository` | Tìm 1 dòng theo khoá chính: `SELECT ... WHERE id = ?` | `Optional<Product>`: một "hộp" có thể chứa sản phẩm, hoặc rỗng nếu không tìm thấy. Hàm này không trả `null` |
+| `.orElseThrow(() -> new RuntimeException("..."))` | Java `Optional` | Mở "hộp" vừa nhận từ `findById`. Có sản phẩm thì lấy ra. Hộp rỗng thì **ném** lỗi do lambda tạo ra. `() -> new RuntimeException(...)` là một lambda không có tham số, chỉ **chạy khi hộp rỗng** | `Product`, chắc chắn khác `null` |
+| `new RuntimeException("...")` | Java | Tạo một object lỗi kèm câu thông báo. Bản thân `new` chỉ **tạo**, chưa ném. Phải có `throw` (hoặc `orElseThrow` ném giùm) thì lỗi mới bay ra. Loại lỗi này không bắt buộc khai báo `throws` ở đầu hàm | object `RuntimeException` |
+| `new IllegalArgumentException("...")` | Java | Như trên. Đây là một loại `RuntimeException` riêng, mang nghĩa "dữ liệu đầu vào không hợp lệ". Dùng kèm `throw` | object `IllegalArgumentException` |
+| `repository.save(product)` | Spring Data JPA, thừa kế từ `JpaRepository` | Lưu entity. `id` chưa có giá trị (`null`) thì coi là bản ghi mới → `INSERT`, DB tự sinh id. `id` đã có giá trị thì coi là bản ghi cũ → cập nhật (`UPDATE`) | `Product` đã lưu, có `id` do DB sinh. Nên dùng object trả về này, đừng dùng lại object truyền vào |
+| `repository.deleteById(id)` | Spring Data JPA, thừa kế từ `JpaRepository` | Tìm bản ghi theo id, có thì xoá (`DELETE`). Không có id đó thì **lặng lẽ bỏ qua**, không báo lỗi | không trả gì (`void`) |
+
+Đọc dòng gọi nối nhau `repository.findById(id).orElseThrow(...)` từ trái sang phải:
+
+1. `repository.findById(id)` → trả về `Optional<Product>` (cái "hộp").
+2. `.orElseThrow(...)` gọi trên cái hộp đó → trả về `Product`, hoặc ném lỗi nếu hộp rỗng.
+
+> So với PHP: hàm tìm theo id trong PHP thường trả `null` khi không thấy, và rất dễ quên kiểm tra. Java bọc kết quả trong `Optional` để **buộc** bạn quyết định luôn: không thấy thì làm gì (ở đây là ném lỗi).
+
+- Vì sao `findAll()` trả đúng `List<Product>`? Vì ở Bước 2 bạn khai báo `JpaRepository<Product, Long>`: `Product` là kiểu entity, `Long` là kiểu khoá chính. Spring Data điền 2 kiểu này vào mọi hàm thừa kế, nên `findById` nhận `Long`, `save` nhận và trả `Product`.
+- Nếu sau này `id` đổi sang kiểu `long` (viết thường), thì `save` hiểu "chưa có id" là `id == 0` thay vì `null`.
+- `count()` (có trong comment ở Bước 2, bài này chưa dùng): đếm số dòng trong bảng, trả về `long`.
+
 ---
 
 ## Bước 4 — Controller: mở API ra ngoài

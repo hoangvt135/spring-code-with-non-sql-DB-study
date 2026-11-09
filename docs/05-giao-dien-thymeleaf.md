@@ -109,6 +109,18 @@ public class ProductViewController {
 - `@ModelAttribute Product product` — Spring tự gom dữ liệu từ các ô input của form thành object `Product`.
 - `return "redirect:/products"` — sau khi lưu/xoá thì chuyển hướng, tránh gửi lại form khi refresh.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Hàm dưới đây **không phải do mình viết**, mà có sẵn trong **Spring MVC** (có được nhờ `spring-boot-starter-web` trong `build.gradle`). Các hàm `service.findAll()`, `service.create(...)`... là của `ProductService` bạn tự viết ở bài 02. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `model.addAttribute(name, value)` | Spring MVC, interface `Model` (`org.springframework.ui.Model`) | Bỏ một biến vào "túi" model, đặt tên là `name`. Template đọc lại bằng `${name}`. `value` là gì cũng được: một list (`service.findAll()`), một object (`new Product()`)... | `Model` (thường bỏ qua) |
+
+Ví dụ `model.addAttribute("products", service.findAll())`: Java chạy `service.findAll()` trước, được `List<Product>`, rồi bỏ list đó vào túi với tên `"products"`. Trong `list.html`, `${products}` chính là list này.
+
+> So với PHP: giống việc gom dữ liệu vào mảng rồi truyền sang view, kiểu `view('products.list', ['products' => $products])` trong Laravel. Ở đây Spring tạo sẵn `Model` rồi truyền vào tham số của method, bạn chỉ việc gọi `addAttribute`.
+
 ---
 
 ## Bước 3 — Tạo template HTML
@@ -198,6 +210,15 @@ Template đặt trong `src/main/resources/templates/`. Tạo thư mục con `pro
 </body>
 </html>
 ```
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `${products.isEmpty()}` | Java `List`, gọi ngay trong template | Thymeleaf gọi được hàm Java của object trong model. `products` là `List<Product>` do controller gửi sang, nên gọi được `isEmpty()` | `boolean`: `true` khi list không có phần tử nào |
+| `confirm('Xoá sản phẩm này?')` | JavaScript có sẵn của **trình duyệt** (không phải Thymeleaf, không chạy ở server) | Hiện hộp thoại có nút OK / Cancel. Viết `return confirm(...)` trong `onclick`: bấm Cancel thì trả `false`, trình duyệt huỷ việc mở link, nên không xoá | `true` (bấm OK) hoặc `false` (bấm Cancel) |
+
+> `${p.id}`, `${p.name}`, `${p.price}` **không** phải gọi hàm thư viện. Thymeleaf tự gọi getter bạn viết trong `Product`: `${p.name}` → `p.getName()`. Vì vậy field nào thiếu getter thì template báo lỗi khi đọc field đó.
 
 ---
 

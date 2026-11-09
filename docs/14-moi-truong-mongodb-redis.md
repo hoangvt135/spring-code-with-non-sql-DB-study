@@ -368,6 +368,68 @@ Bài sau sẽ dùng cách tiện hơn: `MongoRepository` (giống hệt `JpaRepo
 
 Đây không phải nghiệp vụ, mà là **công cụ chẩn đoán**. Nếu để exception bay ra khỏi `run()`, **cả app sẽ dừng**: chỉ vì Redis chưa bật mà không vào được cả trang sản phẩm (đang chạy bằng MySQL). Bắt lỗi rồi ghi `log.error` thì vừa biết lỗi, vừa vẫn làm việc tiếp được.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Các hàm dưới đây **không phải do mình viết**. Chúng nằm trong thư viện **Spring Data Redis** và **Spring Data MongoDB** (có được nhờ 2 starter ở Bước 3), thư viện **BSON** đi kèm driver MongoDB (class `Document`), hoặc trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+
+#### Đọc một dòng gọi nối nhau: `redisTemplate.opsForValue().set(...)`
+
+```java
+redisTemplate.opsForValue().set("demo:last-startup", LocalDateTime.now().toString(), Duration.ofMinutes(10));
+```
+
+Đọc từ trái sang phải. Mỗi dấu `.` là **một lần gọi hàm trên kết quả của lần gọi trước**:
+
+1. `redisTemplate`: bean `StringRedisTemplate`, Spring Boot tự tạo (nhờ starter ở Bước 3) rồi truyền vào constructor.
+2. `.opsForValue()`: **chưa gửi gì** tới Redis. Hàm này chỉ trả về một object kiểu `ValueOperations<String, String>`, có thể hiểu là "bộ lệnh dành cho kiểu String của Redis" (mỗi key giữ **một** giá trị). `<String, String>` nghĩa là key và value đều là chuỗi.
+3. `.set(...)`: gọi trên object vừa nhận được. Tới đây mới thật sự gửi lệnh `SET` tới Redis.
+
+Viết tách thành nhiều dòng thì chạy y hệt (cần thêm `import org.springframework.data.redis.core.ValueOperations;`):
+
+```java
+ValueOperations<String, String> ops = redisTemplate.opsForValue();     // lấy "bộ lệnh String"
+ops.set("demo:last-startup", LocalDateTime.now().toString(), Duration.ofMinutes(10));   // gửi SET
+String value = ops.get("demo:last-startup");                           // gửi GET
+```
+
+**Vì sao phải qua `opsForValue()`?** Redis có nhiều kiểu dữ liệu (String, List, Set, Sorted Set, Hash), mỗi kiểu có bộ lệnh riêng. Spring chia lệnh theo kiểu dữ liệu: `opsForValue()` cho String, `opsForList()` cho List, `opsForZSet()` cho Sorted Set... Bài này chỉ dùng `opsForValue()`. [Bài 16](16-luot-xem-top-san-pham-redis.md) sẽ dùng thêm `opsForZSet()`, `opsForList()` và có bảng đầy đủ.
+
+#### Redis: `redisTemplate.opsForValue().…`
+
+| Hàm | Lệnh Redis | Tham số | Trả về |
+|---|---|---|---|
+| `set(key, value, timeout)` | `SET key value EX 600` | key; giá trị (chuỗi); thời hạn kiểu `Duration`. Hết hạn thì Redis **tự xoá** key | không trả gì (`void`). Key đã có thì bị **ghi đè** cả giá trị lẫn thời hạn |
+| `set(key, value)` (2 tham số) | `SET key value` | không có thời hạn: key nằm đó mãi, tới khi bị xoá. Nếu key cũ đang có hạn thì hạn đó cũng **bị bỏ** | `void` |
+| `get(key)` | `GET key` | key cần đọc | `String`, hoặc **`null`** nếu key không tồn tại (chưa ghi bao giờ, hoặc đã hết hạn) |
+
+#### MongoDB: `Document` và `mongoTemplate.…`
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `new Document("_id", "last-startup")` | `org.bson.Document` (thư viện BSON) | Tạo một document, kèm luôn cặp key → value đầu tiên. `Document` dùng y như một `Map<String, Object>` (thực tế nó *là* một `Map`) | object `Document` |
+| `.append("startedAt", ...)` | `Document` | Thêm một cặp key → value nữa. Giống `$doc['startedAt'] = ...` trong PHP | **chính document đó**, nên gọi nối tiếp `.append(...).append(...)` được |
+| `mongoTemplate.save(doc, "startup_log")` | Spring Data MongoDB | Ghi document vào collection `startup_log`. Đã có document cùng `_id` thì **thay thế**, chưa có thì thêm mới (gọi là *upsert*). Collection chưa có thì MongoDB tự tạo | object vừa lưu (ở đây bỏ qua) |
+| `mongoTemplate.findById(id, Document.class, "startup_log")` | Spring Data MongoDB | Tìm theo `_id` trong collection. `Document.class` là cách truyền "kiểu `Document`" làm tham số, nghĩa là "trả kết quả về dạng `Document`" | `Document`, hoặc **`null`** nếu không có. Khác `findById` của JPA ([bài 02](02-thuc-hanh-crud.md)) trả về `Optional` |
+| `mongoTemplate.getDb()` | Spring Data MongoDB | Lấy database đang dùng (tên lấy từ `uri` ở Bước 4) | `MongoDatabase` (class của driver MongoDB) |
+| `.getName()` | `MongoDatabase` | Lấy tên database | `String`, ví dụ `"demo_mongo"` |
+| `saved.toJson()` | `Document` | Đổi document ra chuỗi JSON để in log | `String`, ví dụ `{"_id": "last-startup", "startedAt": "..."}` |
+
+> Nếu `findById` trả `null`, dòng `saved.toJson()` sẽ ném `NullPointerException`. Lỗi này cũng rơi vào `catch (Exception e)`, nên chỉ hiện thành một dòng log lỗi.
+
+#### Hàm của Java và của logger
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `LocalDateTime.now()` | Java (`java.time`) | Lấy ngày giờ hiện tại, theo múi giờ của máy đang chạy app. Trong container Docker, nếu không đặt múi giờ thì thường là **UTC** (chậm 7 tiếng so với giờ Việt Nam) | `LocalDateTime` |
+| `.toString()` | `LocalDateTime` | Đổi ra chuỗi theo chuẩn ISO-8601, chữ `T` ngăn giữa ngày và giờ | `String`, ví dụ `"2026-11-09T03:15:30.123456"` |
+| `Duration.ofMinutes(10)` | Java (`java.time.Duration`) | Tạo một khoảng thời gian 10 phút. Tương tự có `ofSeconds`, `ofHours`, `ofDays` | `Duration` |
+| `log.info("... {} ... {}", a, b)` | SLF4J `Logger` | Mỗi cặp `{}` được thay **lần lượt** bằng các tham số phía sau: `{}` thứ nhất ← `a`, `{}` thứ hai ← `b`. Giống `sprintf("%s ... %s", $a, $b)` của PHP, nhưng không cần ghi kiểu | `void` |
+| `log.error(...)` | SLF4J `Logger` | Như `log.info`, nhưng ghi ở mức `ERROR`: dòng log có chữ `ERROR` thay cho `INFO`, dễ lọc ra bằng `grep` | `void` |
+
+`catch (Exception e)`: `Exception` là lớp cha của gần như mọi lỗi. Vì thế nó bắt được mọi lỗi mà `save`, `findById`, `set`, `get` ném ra khi không kết nối được, kể cả `NullPointerException` ở trên. Bài 16 sẽ bắt hẹp hơn, chỉ bắt lỗi của Redis (`DataAccessException`), lý do giải thích ở đó.
+
+Đã gặp ở bài trước: `LoggerFactory.getLogger`, `log.info` không có `{}`, `run(String... args)` của `CommandLineRunner` ([bài 13](13-du-lieu-mau-seeder.md)), `e.getMessage()` ([bài 12](12-dang-nhap-spring-security.md)).
+
 ---
 
 ## Bước 6 — Chạy

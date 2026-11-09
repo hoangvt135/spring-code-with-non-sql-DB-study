@@ -185,6 +185,31 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 Đây là lần đầu repo này dùng **query method**: chỉ cần **đặt tên method đúng quy tắc** (`findBy` + tên thuộc tính), Spring Data tự sinh câu SQL. Tên thuộc tính phải đúng chữ hoa/thường: `findByUsername` ứng với `private String username`.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Các hàm trong bài này **không phải do mình viết**. Chúng có sẵn trong **Spring Data JPA** (bước này), **Spring Security** (từ Bước 4, có được nhờ dòng `spring-boot-starter-security` ở Bước 1), **Thymeleaf** hoặc Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+
+Hai hàm ở bước này hơi đặc biệt: **mình khai báo** tên hàm, nhưng **không viết thân hàm**. Lúc app khởi động, Spring Data đọc tên hàm rồi tự sinh câu SQL. Loại hàm này gọi là *query method* (hàm truy vấn theo tên).
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `findByUsername(username)` | mình khai báo, Spring Data JPA tự sinh phần chạy | Tìm user có cột `username` bằng giá trị truyền vào: `SELECT ... FROM users WHERE username = ?` | `Optional<User>`: chứa 1 `User`, hoặc **rỗng** nếu không tìm thấy. Không trả `null` |
+| `existsByUsername(username)` | như trên | Chỉ hỏi **có hay không** có dòng nào khớp, không lấy dữ liệu user về | `boolean`: `true` nếu có ít nhất một dòng |
+
+Spring đọc tên hàm theo từng phần:
+
+| Phần tên | Nghĩa |
+|---|---|
+| `findBy` | Lấy dữ liệu về. Kiểu trả về (`Optional<User>`, `List<User>`...) do mình chọn lúc khai báo |
+| `existsBy` | Chỉ hỏi có/không, nên kiểu trả về là `boolean` |
+| `Username` | Tên thuộc tính trong entity (`username`), viết hoa chữ cái đầu. Gõ sai (ví dụ `findByUsernam`) thì app **không khởi động được**, log báo không tìm thấy thuộc tính đó trong `User` |
+
+So với Laravel: `findByUsername("an")` giống `User::where('username', 'an')->first()`, còn `existsByUsername("an")` giống `User::where('username', 'an')->exists()`.
+
+**`Optional<User>`** (Java, `java.util.Optional`) là một cái "hộp": bên trong có 1 object, hoặc trống. Nếu hàm trả `null` khi không tìm thấy, người gọi rất dễ quên kiểm tra và gặp `NullPointerException`. Trả về "hộp" thì người gọi buộc phải nói rõ "hộp trống thì làm gì". `findById` ở bài 02 cũng trả về `Optional`, và `.orElseThrow(...)` chính là cách "mở hộp" (dùng lại ở Bước 5).
+
+Đã gặp ở bài trước: các hàm có sẵn nhờ `extends JpaRepository` như `save`, `findById`, `findAll` ([bài 02](02-thuc-hanh-crud.md)).
+
 ---
 
 ## Bước 4 — `SecurityConfig`: luật gác cổng
@@ -272,6 +297,115 @@ $2a$10$2F6w7aYEkpQuFijlb3zsy.yAdNIOoqjOLEuLQ0q0/SRM/eRzkTV12
 - **Một chiều**: không có hàm "giải mã" ngược lại.
 - **Mỗi lần encode ra chuỗi khác nhau** (vì salt ngẫu nhiên), kể cả cùng `123456`. Nên không thể so bằng `equals`, phải dùng `passwordEncoder.matches(matKhauGoc, chuoiTrongDB)`. Việc này Spring tự làm lúc đăng nhập.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+#### Đọc chuỗi cấu hình `http.authorizeHttpRequests(...).formLogin(...)...`
+
+Code ở Bước 4 trông như một câu rất dài, nhưng thật ra chỉ có 3 ý lặp đi lặp lại.
+
+**Ý 1: mỗi hàm gọi trên `http` lại trả về chính `http`.**
+
+`http` là object `HttpSecurity`. Spring tạo sẵn nó rồi truyền vào tham số của `securityFilterChain(...)`. Các hàm `authorizeHttpRequests(...)`, `formLogin(...)`, `logout(...)`, `httpBasic(...)`, `csrf(...)` đều ghi thêm một phần cấu hình vào `http`, rồi `return` lại **chính `http`**. Vì vậy mới nối tiếp được bằng dấu `.`. Viết tách thành từng dòng thì chạy y hệt:
+
+```java
+http.authorizeHttpRequests(auth -> ...);    // 1) trang nào cần đăng nhập
+http.formLogin(form -> ...);                // 2) đăng nhập bằng form
+http.logout(logout -> ...);                 // 3) đăng xuất
+http.httpBasic(Customizer.withDefaults());  // 4) HTTP Basic cho API
+http.csrf(csrf -> ...);                     // 5) CSRF
+return http.build();                        // gói tất cả lại thành SecurityFilterChain
+```
+
+Giống query builder của Laravel: `DB::table('users')->where(...)->orderBy(...)`, mỗi hàm trả về lại object để gọi tiếp.
+
+**Ý 2: tham số của mỗi hàm là một lambda, tức "hàm để Spring gọi lại".**
+
+`auth -> auth.requestMatchers(...)...` là một **lambda**: một hàm không có tên, viết ngay tại chỗ. Bên trái mũi tên `->` là tên tham số, bên phải là thân hàm. Tên `auth`, `form`, `logout`, `csrf` là **mình tự đặt** cho dễ đọc, đổi thành `x` vẫn chạy. Viết bằng PHP thì tương đương:
+
+```php
+$http->authorizeHttpRequests(function ($auth) {
+    $auth->requestMatchers('/login', '/register')->permitAll()
+         ->anyRequest()->authenticated();
+});
+```
+
+Spring nhận lambda này, tự tạo một object cấu hình (ví dụ "bảng luật phân quyền"), rồi **gọi lambda, truyền object đó vào** làm `auth`. Bên trong lambda, mình gọi các hàm trên `auth` để chỉnh cấu hình. Kiểu của tham số là `Customizer<...>`: một interface chỉ có đúng một hàm `customize(...)`, nên Java cho phép viết gọn bằng lambda.
+
+**Ý 3: bên trong lambda lại là một chuỗi gọi nối nhau.** Đây là chỗ dễ rối nhất:
+
+```java
+auth -> auth
+    .requestMatchers("/login", "/register", ...)   // ①
+    .permitAll()                                    // ②
+    .anyRequest()                                   // ③
+    .authenticated()                                // ④
+```
+
+| Mắt xích | Gọi trên | Trả về | Hiểu là |
+|---|---|---|---|
+| `auth` | (Spring truyền vào) | `AuthorizationManagerRequestMatcherRegistry` | "bảng luật": danh sách các luật "URL nào → ai được vào" |
+| ① `.requestMatchers("/login", ...)` | bảng luật | `AuthorizedUrl` | một luật **viết dở**: đã biết URL nào, chưa biết cho ai vào |
+| ② `.permitAll()` | luật viết dở | bảng luật (lại chính là `auth`) | chốt luật: ai cũng vào được. Trả lại bảng luật để viết luật tiếp |
+| ③ `.anyRequest()` | bảng luật | `AuthorizedUrl` | luật viết dở mới: "mọi URL còn lại" |
+| ④ `.authenticated()` | luật viết dở | bảng luật | chốt luật: phải đăng nhập |
+
+Quy luật: **chọn URL** (`requestMatchers`, `anyRequest`) → **chọn ai được vào** (`permitAll`, `authenticated`, `hasRole`...) → quay về bảng luật, rồi lặp lại. Vì vậy hai loại hàm này luôn đi thành cặp. Luật thêm trước được xét trước. Nếu viết thêm `requestMatchers(...)` **sau** `anyRequest()`, app không khởi động được, log báo `Can't configure requestMatchers after anyRequest`.
+
+Lambda của `formLogin(...)`, `logout(...)`, `csrf(...)` thì đơn giản hơn: mọi hàm bên trong đều trả về **chính object đó** (ví dụ `form`), nên nối bao nhiêu cũng được, và thứ tự giữa chúng không ảnh hưởng kết quả.
+
+#### Các phần cấu hình lớn: gọi trên `http` (`HttpSecurity`)
+
+| Hàm | Làm gì | Trả về |
+|---|---|---|
+| `authorizeHttpRequests(auth -> ...)` | Khai báo luật: URL nào ai được vào | `HttpSecurity` (chính `http`) |
+| `formLogin(form -> ...)` | Bật đăng nhập bằng form HTML. Spring tự xử lý `POST /login` | `HttpSecurity` |
+| `logout(logout -> ...)` | Cấu hình đăng xuất. Spring tự xử lý `POST /logout`: huỷ session, rồi chuyển hướng | `HttpSecurity` |
+| `httpBasic(...)` | Bật HTTP Basic: đọc user/mật khẩu trong header `Authorization` gửi kèm **từng** request (chính là thứ `curl -u` gửi đi) | `HttpSecurity` |
+| `csrf(csrf -> ...)` | Chỉnh phần chống CSRF. Mặc định đã bật sẵn (xem Bước 8) | `HttpSecurity` |
+| `http.build()` | Gói mọi cấu hình ở trên thành bộ lọc thật | `SecurityFilterChain` (cụ thể là `DefaultSecurityFilterChain`). Mình `return` nó để Spring giữ làm `@Bean` |
+
+> Các hàm trên đều khai báo `throws Exception`, nên method `securityFilterChain(...)` cũng phải ghi `throws Exception`. Không ghi thì Java báo lỗi biên dịch.
+
+#### Trong `authorizeHttpRequests`: gọi trên `auth`
+
+| Hàm | Làm gì | Trả về |
+|---|---|---|
+| `requestMatchers("/login", "/css/**", ...)` | Chọn URL theo mẫu. Nhận 1 hoặc nhiều chuỗi (kiểu `String...`, xem [sổ tay](common_knowledge.md#string-args-3-dấu-chấm-trong-run-là-gì)). `*` khớp một đoạn đường dẫn, `**` khớp mọi thứ phía sau: `/css/**` khớp cả `/css/app.css` lẫn `/css/a/b.css` | `AuthorizedUrl` (luật viết dở) |
+| `anyRequest()` | Chọn mọi request **chưa khớp** luật nào ở trên | `AuthorizedUrl` |
+| `permitAll()` | Ai cũng vào được, kể cả người chưa đăng nhập | bảng luật |
+| `authenticated()` | Phải đăng nhập, vai trò nào cũng được | bảng luật |
+
+#### Trong `formLogin`: gọi trên `form` (`FormLoginConfigurer`)
+
+| Hàm | Làm gì | Trả về |
+|---|---|---|
+| `loginPage("/login")` | Dùng trang login của mình thay cho trang tiếng Anh có sẵn. Kéo theo 3 việc: chưa đăng nhập thì bị đẩy về `/login`; Spring nhận form gửi tới `POST /login`; sai mật khẩu thì chuyển về `/login?error` | chính `form` |
+| `defaultSuccessUrl("/products")` | Đăng nhập xong thì đi đâu. Nếu trước đó người dùng đang định vào một trang khác (ví dụ `/products/new`) thì Spring đưa về đúng trang đó. Chỉ khi không có trang nào đang chờ mới về `/products`. Muốn **luôn luôn** về `/products`: `defaultSuccessUrl("/products", true)` | chính `form` |
+| `permitAll()` | Mở cửa cho mọi người vào các URL của việc đăng nhập (`/login`, `/login?error`), khỏi phải tự thêm vào `requestMatchers` | chính `form` |
+
+#### Trong `logout`: gọi trên `logout` (`LogoutConfigurer`)
+
+| Hàm | Làm gì | Trả về |
+|---|---|---|
+| `logoutSuccessUrl("/login?logout")` | Đăng xuất xong thì chuyển tới đâu. Thật ra `loginPage("/login")` ở trên đã tự đặt sẵn đúng giá trị này, ở đây viết ra cho rõ ràng | chính `logout` |
+| `permitAll()` | Mở cửa cho mọi người vào URL đăng xuất và URL ở `logoutSuccessUrl` | chính `logout` |
+
+#### Hai hàm còn lại trong chuỗi
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `Customizer.withDefaults()` | Spring Security, hàm `static` (gọi thẳng trên tên interface) | Trả về một lambda **không làm gì cả**. Ý nghĩa: "bật tính năng này, giữ nguyên mặc định". Viết `httpBasic(basic -> {})` cũng y hệt | `Customizer` |
+| `csrf.ignoringRequestMatchers("/api/**")` | `CsrfConfigurer` | Không đòi CSRF token với các URL khớp mẫu. Các URL khác vẫn đòi như cũ | chính `csrf` |
+
+#### Bộ mã hoá mật khẩu
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `new BCryptPasswordEncoder()` | Spring Security (phần crypto) | Tạo bộ mã hoá dùng thuật toán BCrypt, độ chậm (cost) mặc định là `10`: chính là số `$10$` trong chuỗi mã hoá | object `BCryptPasswordEncoder`. Method `passwordEncoder()` khai báo kiểu trả về là interface `PasswordEncoder`, nên chỗ khác chỉ biết "một bộ mã hoá", không cần biết bên trong là BCrypt |
+| `passwordEncoder.matches(raw, encoded)` | interface `PasswordEncoder` | So mật khẩu người dùng gõ (`raw`) với chuỗi mã hoá trong DB (`encoded`). Mình **không tự gọi** hàm này: Spring gọi lúc đăng nhập | `boolean`. Nếu chuỗi trong DB không có dạng BCrypt (ví dụ mật khẩu trần insert tay) thì trả `false` và log cảnh báo `Encoded password does not look like BCrypt` |
+
+Hàm `encode` (mã hoá lúc đăng ký): xem Bước 5.
+
 ---
 
 ## Bước 5 — `UserService`: đăng ký + trả lời "user X là ai?"
@@ -343,6 +477,38 @@ Vì có **hai class cùng tên `User`**: class của mình (`com.example.demo.us
 
 `IllegalArgumentException` **là một loại** `RuntimeException` (class con), nên vẫn giữ đúng kiểu "Service ném lỗi" như các bài trước. Dùng loại cụ thể để controller **chỉ bắt đúng lỗi "dữ liệu không hợp lệ"**, còn lỗi khác (mất kết nối DB...) vẫn bay ra thành trang lỗi bình thường.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `user.getPassword().length()` | Java `String` | Đếm số ký tự của chuỗi | `int`. Gọi trên `null` thì ném `NullPointerException`, nên code kiểm tra `== null` **trước**: với `\|\|`, vế trái đúng thì Java bỏ qua vế phải (giống `&&`, xem [sổ tay](common_knowledge.md#return-a--b--c-hoạt-động-thế-nào-toán-tử--và-cơ-chế-đoản-mạch)) |
+| `passwordEncoder.encode(raw)` | interface `PasswordEncoder` (Spring Security). Object thật là `BCryptPasswordEncoder` tạo ở Bước 4 | Mã hoá mật khẩu gốc bằng BCrypt, mỗi lần một salt ngẫu nhiên | `String` dài 60 ký tự, dạng `$2a$10$...`. Cùng đầu vào nhưng mỗi lần gọi ra một chuỗi khác |
+| `loadUserByUsername(username)` | interface `UserDetailsService` (Spring Security) | Tên hàm, tham số, kiểu trả về đều do Spring quy định, mình chỉ viết thân hàm (vì thế có `@Override`). Spring gọi hàm này khi có người bấm Đăng nhập hoặc gửi `curl -u` | `UserDetails`: thông tin user theo "khuôn" của Spring Security |
+| `new UsernameNotFoundException(msg)` | Spring Security | Tạo lỗi "không có user này". Nó là một loại `RuntimeException`. Spring bắt lỗi này rồi **đổi thành lỗi chung "sai thông tin đăng nhập"** → chuyển về `/login?error`. Vì thế câu `"Không có user ..."` không bao giờ hiện ra trình duyệt, đúng tinh thần "không nói rõ cái nào sai" ở Bước 7 | (constructor, tạo ra object lỗi để `throw`) |
+
+#### Đọc chuỗi builder `User.withUsername(...).password(...).roles(...).build()`
+
+```java
+return org.springframework.security.core.userdetails.User
+        .withUsername(user.getUsername())
+        .password(user.getPassword())
+        .roles(user.getRole())
+        .build();
+```
+
+| Mắt xích | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `User.withUsername(name)` | hàm `static` của class `User` (Spring Security). Gọi thẳng trên tên class, không cần `new` | Tạo một "phiếu điền thông tin" (gọi là *builder*) và ghi sẵn tên đăng nhập | `UserBuilder` |
+| `.password(p)` | `UserBuilder` | Ghi mật khẩu **đã mã hoá** lấy từ DB. Lát nữa Spring đưa chuỗi này cho `matches(...)` (Bước 4) | chính `UserBuilder` đó |
+| `.roles("USER")` | `UserBuilder` | Ghi vai trò. Spring tự thêm tiền tố `ROLE_`, thành quyền `ROLE_USER`. Nếu truyền chuỗi đã có sẵn `ROLE_` (ví dụ `"ROLE_ADMIN"`) thì ném `IllegalArgumentException` | chính `UserBuilder` đó |
+| `.build()` | `UserBuilder` | Kiểm tra đã đủ thông tin, rồi tạo object thật | `UserDetails` |
+
+`.password()` và `.roles()` trả về **chính builder**, nên nối tiếp được, giống `form` ở Bước 4. Chỉ `.build()` trả về thứ khác: kết quả cuối cùng. Vì sao không `new` thẳng? Constructor của class này đòi truyền danh sách quyền dưới dạng object `GrantedAuthority`, viết dài và khó đọc. Builder cho phép điền từng mục, mỗi mục có tên rõ ràng, mục nào không điền thì dùng giá trị mặc định.
+
+Dùng lại từ bước trước: `existsByUsername`, `findByUsername` (xem Bước 3).
+
+Đã gặp ở bài trước: `.orElseThrow(() -> ...)`, `new IllegalArgumentException(...)`, `userRepository.save(...)` ([bài 02](02-thuc-hanh-crud.md)).
+
 ---
 
 ## Bước 6 — `AuthController`
@@ -397,6 +563,14 @@ So với `ProductViewController`:
 - Không có `@RequestMapping` ở đầu class, vì `/login` và `/register` không chung tiền tố.
 - Lỗi thì **không redirect** mà `return "auth/register"` luôn, để giữ được `user` (tên đã gõ) và `error` trong `Model`. Redirect là trình duyệt gửi request mới, model cũ mất sạch.
 - `?registered` chỉ là một "cờ" trên URL để trang login biết vừa đăng ký xong (xem Bước 7).
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `e.getMessage()` | Java, class `Throwable` (cha của mọi exception) | Lấy câu thông báo đã truyền vào lúc tạo lỗi, ví dụ lúc `new IllegalArgumentException("Mật khẩu phải có ít nhất 6 ký tự")` trong `UserService` | `String`, ví dụ `"Mật khẩu phải có ít nhất 6 ký tự"` |
+
+Đã gặp ở bài trước: `model.addAttribute(...)` ([bài 05](05-giao-dien-thymeleaf.md)).
 
 ---
 
@@ -475,6 +649,16 @@ Vì sao báo chung "Sai tên đăng nhập **hoặc** mật khẩu" mà không n
 </body>
 </html>
 ```
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+| Biểu thức | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `${param.error}` | Thymeleaf: `param` là biến có sẵn, mình không phải đưa vào `Model` | Đọc tham số trên URL (query string), giống `$_GET['error']` của PHP. `${param.logout}`, `${param.registered}` cũng vậy | Giá trị của tham số (dạng mảng `String[]`, vì URL có thể lặp tên: `?a=1&a=2`), hoặc `null` nếu URL không có tham số đó |
+
+Dùng với `th:if`: URL không có `?error` → `null` → `th:if` coi là **sai**, bỏ thẻ `<p>` đi. URL có `?error` (kể cả không kèm giá trị gì) → khác `null` → **đúng**, thẻ được hiện.
+
+Đã gặp ở bài trước: `th:if`, `th:text`, `th:action`, `th:object`, `th:field`, `@{...}` ([bài 05](05-giao-dien-thymeleaf.md)).
 
 ---
 
@@ -568,6 +752,21 @@ form.inline { display: inline; }
 .alert-error { background: #fee2e2; color: #991b1b; }
 .alert-ok { background: #dcfce7; color: #166534; }
 ```
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Các thuộc tính `sec:` đến từ thư viện `thymeleaf-extras-springsecurity6` (thêm ở Bước 1). Chúng chạy được nhờ khai báo `xmlns:sec` ở thẻ `<html>`.
+
+| Thuộc tính / biểu thức | Của ai | Làm gì | Kết quả |
+|---|---|---|---|
+| `sec:authorize="..."` | thư viện `thymeleaf-extras-springsecurity6` | Tính biểu thức bên trong dấu `"..."`. Đúng thì giữ thẻ, sai thì **bỏ hẳn** thẻ khỏi HTML gửi về trình duyệt (giống `th:if`) | thẻ được giữ hoặc bị bỏ |
+| `isAuthenticated()` | hàm của Spring Security, chỉ dùng **bên trong** biểu thức của `sec:authorize` | Hỏi "người đang xem đã đăng nhập chưa?". Người chưa đăng nhập (Spring gọi là *anonymous*) thì được `false` | `boolean` |
+| `!isAuthenticated()` | `!` là phép phủ định, giống PHP | Đúng khi **chưa** đăng nhập | `boolean` |
+| `sec:authentication="name"` | thư viện `thymeleaf-extras-springsecurity6` | Lấy thuộc tính `name` của object `Authentication` (thông tin người đang đăng nhập, Spring giữ trong session), tức là gọi `getName()`, rồi in ra thay nội dung thẻ (giống `th:text`). `name` chính là username mà `loadUserByUsername` đưa vào `withUsername(...)` ở Bước 5 | chữ được in vào thẻ, ví dụ `an` |
+
+> Cùng nhóm với `isAuthenticated()` còn có `hasRole('ADMIN')` dùng ở bài tập 3: đúng khi user có quyền `ROLE_ADMIN` (nhớ là `.roles(...)` ở Bước 5 tự thêm tiền tố `ROLE_`).
+
+Đã gặp ở bài trước: `th:action`, `@{...}` ([bài 05](05-giao-dien-thymeleaf.md)).
 
 ---
 

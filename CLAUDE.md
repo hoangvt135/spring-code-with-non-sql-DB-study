@@ -10,6 +10,7 @@ Người dùng đang **vừa học vừa làm** theo giáo trình trong [docs/](
 Hệ quả cho cách làm việc:
 - **Trả lời và comment code bằng tiếng Việt.** Toàn bộ README, docs và comment trong source đều là tiếng Việt.
 - Khi được nhờ thêm tính năng, ưu tiên **giải thích trước, viết code sau** — và bám theo cách làm mà bài học tương ứng trong `docs/` đã dạy, kể cả khi có cách "chuẩn production" hơn.
+- **Khi viết bài học, giải thích mọi hàm có sẵn** (của thư viện hoặc của Java) mà bài dùng lần đầu, ví dụ `opsForZSet().incrementScore(...)`: thuộc class/thư viện nào, nhận tham số gì, trả về gì. Người học hiểu hàm tự viết trong service, nhưng không hiểu hàm thư viện. Mẫu: phần **📖 Tra cứu: các hàm có sẵn dùng trong bước này** ở cuối mỗi bước của bài 16 (bảng Hàm | Của ai | Làm gì | Trả về). Hàm đã giải thích ở bài trước thì chỉ cần link tới bài đó.
 - Đừng tự ý refactor sang kiến trúc nâng cao (DTO, mapper, Flyway, Lombok, global exception handler...) trừ khi được yêu cầu. Code hiện tại cố ý đơn giản: getter/setter viết tay, service ném `RuntimeException`, entity trả thẳng ra JSON.
 
 ## ⛔ Quy tắc tài liệu: CHỈ LOCAL, KHÔNG CÓ BẤT KỲ BẢN ONLINE NÀO (bắt buộc)
@@ -89,13 +90,13 @@ com.example.demo
 ├── category/   Category, CategoryRepository, CategoryService, CategoryController, CategoryViewController
 ├── user/       User, UserRepository, UserService (UserDetailsService), AuthController   # bài 12
 ├── config/     SecurityConfig (bài 12), WebConfig (map /uploads/**, bài 15)
-├── common/     NotFoundException (@ResponseStatus 404, bài 10)
+├── common/     NotFoundException (@ResponseStatus 404, bài 10); AppConfig + ModuleConfigLoader (đọc cấu hình, bài 16)
 ├── storage/    FileStorageService — class DUY NHẤT biết file upload nằm đâu (bài 15)
 ├── seed/       DataSeeder — CommandLineRunner tạo admin + dữ liệu mẫu (bài 13, 15.5)
 └── nosql/      NoSqlConnectionCheck — thử kết nối Mongo/Redis lúc khởi động (bài 14)
 ```
 
-Bài 16 sẽ thêm `stats/ProductStatsService` (class duy nhất làm việc với Redis cho lượt xem), theo đúng khuôn của `storage/`.
+Bài 16 sẽ thêm `stats/ProductStatsService` (class duy nhất làm việc với Redis cho lượt xem), theo đúng khuôn của `storage/`. Bài 16 Bước 2 cũng chuyển cấu hình `app.*` ra khỏi `application.yml`: **mỗi module một file** `src/main/resources/config/<module>.properties` (`stats`, `product`, `upload`). `common/ModuleConfigLoader` (`EnvironmentPostProcessor`, đăng ký trong `META-INF/spring.factories`) tự nạp mọi file `config/*.properties` theo UTF-8, với độ ưu tiên thấp hơn `application.yml` và biến môi trường. Code đọc qua `common/AppConfig` (`getString` / `getInt` / `getDuration`, bọc `Environment.getRequiredProperty`), gọi trong constructor và lưu vào field `final`. Từ bài 16 trở đi, cấu hình mới của một module thì thêm vào file `config/<module>.properties` của module đó và đọc bằng `AppConfig`. Không viết cứng số trong code, không dùng `@Value`, không dùng `@ConfigurationProperties` (người học đã chọn bỏ cách này). `application.yml` chỉ giữ cấu hình của Spring.
 
 Mỗi feature là một package tự chứa đủ 4 tầng. Các package hỗ trợ (`storage/`, `seed/`, `nosql/`, `stats/`) thì không cần đủ 4 tầng. **Khi thêm model mới, làm theo đúng khuôn này**: tạo package mới cạnh `product/`, `category/` với đủ Entity → Repository → Service → Controller.
 

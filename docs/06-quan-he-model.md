@@ -87,6 +87,16 @@ public class Category {
 }
 ```
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Hàm dưới đây **không phải do mình viết**, mà có sẵn trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `new ArrayList<>()` | Java (`java.util.ArrayList`) | Tạo một list rỗng, thêm/xoá phần tử được. `<>` để trống vì Java tự suy ra kiểu phần tử từ vế trái `List<Product>`. Gán sẵn như vậy để một `Category` vừa `new` ra có `getProducts()` là list rỗng, không phải `null` | `ArrayList<Product>` |
+
+> `List` là **interface** (bản mô tả: list thì phải có `add`, `get`, `size`...), còn `ArrayList` là **class** làm thật các việc đó. Khai báo field bằng `List`, tạo object bằng `ArrayList`. Gần giống mảng có chỉ số `0, 1, 2...` trong PHP, nhưng chỉ chứa được một kiểu phần tử (ở đây là `Product`).
+
 ---
 
 ## Bước 2 — Thêm quan hệ vào `Product`
@@ -241,6 +251,12 @@ public class CategoryController {
 }
 ```
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Bước này không có hàm mới. `CategoryRepository` được thừa hưởng đúng bộ hàm như `ProductRepository` nhờ dòng `extends JpaRepository<Category, Long>`, chỉ khác kiểu: `findAll()` trả `List<Category>`, `findById(id)` trả `Optional<Category>`, `save(category)` nhận và trả `Category`.
+
+Đã gặp ở bài trước: `findAll`, `findById`, `orElseThrow`, `new RuntimeException`, `save`, `deleteById` ([bài 02, Bước 3](02-thuc-hanh-crud.md#bước-3--service-chứa-logic-nghiệp-vụ)).
+
 ---
 
 ## Bước 5 — Truy vấn theo quan hệ: lấy product của 1 category
@@ -274,6 +290,24 @@ Và trong `product/ProductService.java`:
 ```
 
 > ⚠️ Dùng **đúng tên field repository bạn đã đặt** trong `ProductService`. Nếu bạn đặt là `repository` thì viết `repository.findByCategoryId(...)`; nếu là `productRepository` thì viết `productRepository.findByCategoryId(...)`.
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `productRepository.findByCategoryId(categoryId)` | Spring Data JPA **tự sinh**. Bạn chỉ khai báo tên hàm trong interface, không viết thân hàm, không viết SQL | Lấy mọi product có `category_id` bằng tham số: `SELECT ... FROM product WHERE category_id = ?` | `List<Product>`. Không có product nào thì list rỗng |
+
+Hàm này gọi là **query method**: Spring đọc **tên hàm** lúc app khởi động rồi tự sinh câu SQL.
+
+- `findBy`: "tìm các bản ghi theo...", tức là câu `SELECT ... WHERE`.
+- `CategoryId`: Spring tìm field `categoryId` trong `Product`. Không có, nên nó tách theo chữ hoa thành `category` + `id`, tức là `product.category.id`. Đó chính là cột khoá ngoại `category_id` (Bước 2).
+- Tham số `Long categoryId` được điền vào dấu `?`.
+- Kiểu trả về do bạn khai báo: `List<Product>` nghĩa là lấy nhiều kết quả.
+- Tên hàm không khớp field nào trong entity thì app **không khởi động được**, log có lỗi dạng `No property '...' found for type 'Product'`.
+
+Cùng cách này, `findByNameContaining(String keyword)` ở bài tập 3 [bài 02](02-thuc-hanh-crud.md) sinh ra `WHERE name LIKE '%keyword%'`.
+
+> Nếu từng dùng Laravel: gần giống `Product::whereCategoryId($id)->get()`, cũng đoán điều kiện từ tên hàm. Khác ở chỗ Spring kiểm tra tên hàm ngay lúc khởi động, sai là báo lỗi luôn.
 
 ---
 

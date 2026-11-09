@@ -323,6 +323,57 @@ Mấy điểm cần để ý:
 - **Tại sao kiểm tra cả `null` lẫn `isEmpty()`?** Khi form có ô chọn file mà người dùng không chọn gì, tuỳ trường hợp Spring sẽ đưa vào `null` hoặc một file rỗng. Kiểm tra cả hai thì chắc chắn đúng.
 - **`resolve()` để làm gì?** `delete()` nhận tên file lấy từ DB. Nếu vì lý do nào đó trong DB có giá trị `../../app.jar`, `normalize()` sẽ tính ra đường dẫn thật và `startsWith(root)` sẽ chặn lại. Nhờ vậy không bao giờ xoá nhầm file nằm ngoài thư mục upload.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Các hàm dưới đây **không phải do mình viết**. Chúng có sẵn trong Java (nhóm `java.nio.file` để làm việc với file/thư mục, nhóm `java.util`) hoặc trong Spring (`MultipartFile`, `StringUtils`). Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+
+#### File được upload: `MultipartFile` (Spring Web)
+
+Trong PHP, file upload nằm trong mảng `$_FILES['imageFile']` (gồm `name`, `size`, `tmp_name`...). Trong Spring, nó là một object `MultipartFile`, có sẵn các hàm:
+
+| Hàm | Làm gì | Trả về |
+|---|---|---|
+| `file.isEmpty()` | Kiểm tra file có rỗng không: người dùng không chọn file, hoặc file 0 byte | `boolean` |
+| `file.getOriginalFilename()` | Lấy tên file gốc trên máy người dùng, giống `$_FILES['imageFile']['name']`. Đây là dữ liệu **người dùng gửi lên**, không được tin | `String`, ví dụ `"Ảnh Đẹp.JPG"`. Có thể là **`null`** |
+| `file.transferTo(path)` | Ghi nội dung file upload ra đường dẫn đích trên ổ đĩa, giống `move_uploaded_file()` của PHP. File đích đã có thì bị **ghi đè**. Thư mục chứa nó phải có sẵn (vì vậy constructor mới gọi `createDirectories`) | không trả gì (`void`). Ghi lỗi thì ném `IOException` |
+
+#### Đường dẫn và file: `Paths`, `Path`, `Files` (Java NIO)
+
+Ba cái tên này dễ lẫn:
+
+- **`Path`**: một **đường dẫn**, ví dụ `/app/uploads/abc.jpg`. Có `Path` chưa có nghĩa là file có thật.
+- **`Paths`**: chỉ dùng để tạo `Path` từ chuỗi.
+- **`Files`**: các hàm **thật sự đụng tới ổ đĩa** (tạo thư mục, xoá file...).
+
+Dễ nhớ: hàm của `Path` chỉ tính toán trên chữ của đường dẫn, hàm của `Files` mới làm việc với ổ đĩa.
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `Paths.get(uploadDir)` | `Paths` | Chuỗi → `Path`. Chưa kiểm tra thư mục có tồn tại không | `Path`, ví dụ `uploads` |
+| `.toAbsolutePath()` | `Path` | Đường dẫn tương đối → tuyệt đối, bằng cách ghép thư mục đang chạy app vào trước. Đã là tuyệt đối thì giữ nguyên | `Path`, ví dụ `/app/uploads` |
+| `.normalize()` | `Path` | Bỏ các đoạn `.` và `..` cho gọn: `/app/uploads/../app.jar` → `/app/app.jar`. Chỉ tính trên chữ, không kiểm tra ổ đĩa | `Path` |
+| `root.resolve(filename)` | `Path` | Ghép thêm một đoạn vào sau đường dẫn: `/app/uploads` + `abc.jpg` → `/app/uploads/abc.jpg`. Giống `$dir . '/' . $name` trong PHP, nhưng tự lo dấu `/`. (Đây là hàm của `Path`, khác với hàm `resolve()` mình tự viết bao bên ngoài) | `Path`. Nếu `filename` là đường dẫn tuyệt đối, ví dụ `/etc/passwd`, thì kết quả **chính là** `/etc/passwd`: thêm một lý do phải kiểm tra `startsWith` |
+| `target.startsWith(root)` | `Path` | Kiểm tra `target` có nằm trong `root` không. So sánh **theo từng đoạn thư mục**, không phải theo chữ: `/app/uploads2/x.jpg` **không** nằm trong `/app/uploads` | `boolean` |
+| `Files.createDirectories(root)` | `Files` | Tạo thư mục, tạo luôn các thư mục cha còn thiếu (giống `mkdir -p`, hay `mkdir($dir, 0777, true)` của PHP). Đã có rồi thì **không** báo lỗi | `Path` (ở đây bỏ qua). Không tạo được (không có quyền ghi, hoặc đã có một **file** trùng tên) thì ném `IOException` |
+| `Files.deleteIfExists(path)` | `Files` | Xoá file nếu có, không có thì thôi, **không** báo lỗi (khác `Files.delete`: không có file là ném lỗi). Giống `if (file_exists($f)) unlink($f);` | `boolean`: `true` nếu đã xoá thật, `false` nếu file vốn không có. Xoá không được thì ném `IOException` |
+
+#### Các hàm khác
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `Set.of("jpg", "jpeg", ...)` | Java `Set` | Tạo một tập hợp **chỉ đọc**: không thêm, không xoá được. Giống một mảng hằng trong PHP | `Set<String>` |
+| `ALLOWED_EXTENSIONS.contains(x)` | Java `Set` | Kiểm tra `x` có trong tập không, giống `in_array($x, $arr)` của PHP | `boolean` |
+| `StringUtils.getFilenameExtension(name)` | Spring Core (`org.springframework.util`) | Lấy phần sau dấu `.` **cuối cùng**: `"a.b.JPG"` → `"JPG"`. Giữ nguyên chữ hoa/thường, nên sau đó mới cần `toLowerCase()`. Giống `pathinfo($name, PATHINFO_EXTENSION)` | `String`, không kèm dấu chấm. **`null`** nếu tên là `null` hoặc không có dấu `.` |
+| `ext.toLowerCase()` | Java `String` | Đổi sang chữ thường: `"JPG"` → `"jpg"`, giống `strtolower` | `String` mới. Chuỗi cũ không đổi. Gọi trên `null` thì ném `NullPointerException`, vì vậy phải kiểm tra `ext == null` **trước** |
+| `UUID.randomUUID()` | Java (`java.util.UUID`) | Sinh một mã ngẫu nhiên 128 bit, gần như không bao giờ trùng | `UUID`. Khi nối với chuỗi bằng `+`, Java tự gọi `toString()`, ra dạng `"3f2a9c1e-7b4d-4e8a-9c1f-2d3e4f5a6b7c"` (36 ký tự) |
+| `filename.isBlank()` | Java `String` (từ Java 11) | `true` nếu chuỗi rỗng **hoặc** chỉ toàn khoảng trắng | `boolean` |
+| `new RuntimeException(message, e)` | Java | Tạo lỗi mới, kèm **lỗi gốc** `e` làm "nguyên nhân". Khi in ra log sẽ có thêm dòng `Caused by: ...` cho biết lỗi thật là gì | object `RuntimeException` |
+| `log.warn(...)` | SLF4J `Logger` | Như `log.info` / `log.error` ([bài 14](14-moi-truong-mongodb-redis.md)), nhưng ở mức `WARN`: có vấn đề, nhưng app vẫn chạy tiếp được | `void` |
+
+`IOException` (`java.io`) là lỗi đọc/ghi file. Ở bước này nó do `Files.createDirectories`, `file.transferTo` và `Files.deleteIfExists` ném ra. Java **bắt buộc** phải `catch` (hoặc khai báo `throws`) loại lỗi này, nên cả 3 chỗ đều có `try/catch`. Xem thêm: [`catch (IOException e)` và `catch (Exception e)` khác nhau thế nào?](common_knowledge.md#catch-ioexception-e-và-catch-exception-e-khác-nhau-thế-nào).
+
+Đã gặp ở bài trước: `LoggerFactory.getLogger` ([bài 13](13-du-lieu-mau-seeder.md)), `log.info` với `{}` ([bài 14](14-moi-truong-mongodb-redis.md)), `e.getMessage()` ([bài 12](12-dang-nhap-spring-security.md)), `new IllegalArgumentException(...)` ([bài 02](02-thuc-hanh-crud.md)).
+
 ---
 
 ## Bước 5 — `WebConfig`: cho trình duyệt xem được file trong `uploads/`
@@ -361,6 +412,16 @@ public class WebConfig implements WebMvcConfigurer {
 
 `WebMvcConfigurer` là "cửa" để tuỳ chỉnh Spring MVC. Ở đây ta chỉ dùng một phương thức: thêm một cặp "URL ↔ thư mục".
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `registry.addResourceHandler(FileStorageService.URL_PREFIX + "**")` | `ResourceHandlerRegistry` (Spring MVC) | Khai báo mẫu URL sẽ được trả về bằng file tĩnh. `**` nghĩa là mọi thứ phía sau, kể cả thư mục con | `ResourceHandlerRegistration`: object để khai báo tiếp cho mẫu URL vừa thêm |
+| `.addResourceLocations("file:" + ... + "/")` | `ResourceHandlerRegistration` | Nói cho Spring biết tìm file ở đâu. Tiền tố `file:` là ổ đĩa, `classpath:` là bên trong source/`.jar`. Truyền được nhiều chỗ, Spring tìm lần lượt | `ResourceHandlerRegistration` (ở đây bỏ qua) |
+
+- **`addResourceHandlers(registry)` không phải hàm mình gọi.** Nó là method của interface `WebMvcConfigurer`. Mình **ghi đè** (`@Override`) để điền nội dung, còn Spring tự gọi nó 1 lần lúc khởi động và tự truyền `registry` vào. Giống `run()` của `CommandLineRunner` ([bài 13](13-du-lieu-mau-seeder.md)).
+- `fileStorageService.getRoot()` là hàm mình viết ở Bước 4, trả về `Path`. Nối `Path` với chuỗi bằng `+` thì Java tự gọi `toString()`: `"file:" + root + "/"` → `"file:/app/uploads/"`.
+
 ---
 
 ## Bước 6 — `SecurityConfig`: cho phép xem ảnh
@@ -376,6 +437,10 @@ public class WebConfig implements WebMvcConfigurer {
 và thêm import `import com.example.demo.storage.FileStorageService;`.
 
 > Dùng hằng `URL_PREFIX` thay vì gõ tay `"/uploads/**"` để chỉ có **một** chỗ quyết định tiền tố URL. Sau này đổi tiền tố ở `FileStorageService` thì `WebConfig` và `SecurityConfig` tự đổi theo.
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Bước này không có hàm mới. Đã gặp ở bài trước: `requestMatchers(...)`, `permitAll()` ([bài 12](12-dang-nhap-spring-security.md)).
 
 ---
 
@@ -496,6 +561,16 @@ Những gì thay đổi so với trước:
 | `imageUrl()` | **Mới**. Template gọi hàm này để lấy `src` của ảnh |
 
 `ClassPathResource("static/...")` tìm file trong classpath: lúc dev là `build/resources/main/static/...`, lúc chạy `.jar` là bên trong file `.jar`. Vì vậy cách kiểm tra này chạy đúng ở mọi môi trường.
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `new ClassPathResource("static/" + defaultImage)` | Spring Core (`org.springframework.core.io`) | Trỏ tới một file trong **classpath** (giải thích ngay trên). Mới chỉ trỏ tới, chưa đọc gì | object `ClassPathResource` |
+| `.exists()` | `ClassPathResource` | Kiểm tra file đó có thật không | `boolean` |
+| `productRepository.delete(product)` | Spring Data JPA. `ProductRepository` có sẵn hàm này nhờ `extends JpaRepository` | Xoá **đúng entity truyền vào** (theo id của nó). Khác `deleteById(id)` ở các bài trước: ở đây đã có sẵn object `product` từ `findById`, và vẫn cần object đó để biết tên file ảnh cần xoá | `void` |
+
+Đã gặp ở bài trước: `findAll()`, `findById(id).orElseThrow(...)`, `save(...)` ([bài 02](02-thuc-hanh-crud.md)). `log.warn`, `MultipartFile`: xem Bước 4.
 
 ---
 
@@ -694,6 +769,30 @@ textarea.form_controll {
 ```
 
 > **"Thumbnail" ở đây mới chỉ là *hiển thị nhỏ*.** Trình duyệt vẫn tải **nguyên file** (có thể vài MB) rồi CSS thu nhỏ lại. Dự án thật sẽ tạo thêm một file ảnh nhỏ thật sự lúc upload (thư viện Thumbnailator...). Bài này để phần đó lại cho sau.
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+`#strings`, `#numbers` là các **object tiện ích có sẵn của Thymeleaf**, gọi được trong mọi biểu thức `${...}` mà controller không phải gửi sang. Dấu `#` ở đầu để phân biệt với biến do controller gửi (`${products}`) và bean Spring (`${@productService}`).
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `#strings.isEmpty(p.description)` | Thymeleaf `#strings` | `true` nếu giá trị là `null`, chuỗi rỗng, **hoặc chỉ toàn khoảng trắng** | `Boolean` |
+| `#strings.abbreviate(p.description, 80)` | Thymeleaf `#strings` | Chuỗi dài hơn 80 ký tự → lấy 77 ký tự đầu rồi thêm `"..."`, tổng đúng 80. Chuỗi từ 80 ký tự trở xuống thì giữ nguyên. Số tối đa phải từ 3 trở lên | `String`. Đầu vào `null` thì trả `null` |
+| `#numbers.formatDecimal(p.price, 1, 'POINT', 0, 'COMMA')` | Thymeleaf `#numbers` | Định dạng số. Xem 5 tham số ở bảng dưới | `String`, ví dụ `1500000.0` → `"1.500.000"`. Số `null` thì trả `null` |
+
+5 tham số của `formatDecimal`, theo thứ tự:
+
+| Vị trí | Ở đây | Nghĩa |
+|---|---|---|
+| 1 | `p.price` | Số cần định dạng |
+| 2 | `1` | Phần nguyên có ít nhất mấy chữ số. Đặt `3` thì `5` thành `005` |
+| 3 | `'POINT'` | Dấu ngăn hàng nghìn: `'POINT'` (`.`), `'COMMA'` (`,`), `'WHITESPACE'` (khoảng trắng), `'NONE'` (không có), `'DEFAULT'` (theo ngôn ngữ, tức *locale*, của request) |
+| 4 | `0` | Số chữ số thập phân. `0` là làm tròn thành số nguyên |
+| 5 | `'COMMA'` | Dấu thập phân, chọn trong cùng danh sách trên. Ở đây không có phần thập phân nên không hiện ra, nhưng vẫn phải truyền |
+
+> Bài tập 2 của [bài 05](05-giao-dien-thymeleaf.md) đã nhắc tới `formatDecimal` với thứ tự ngược lại (`'COMMA'` ngăn hàng nghìn, `'POINT'` thập phân), cho ra `500,000` kiểu Mỹ.
+
+Đã gặp ở bài trước: `products.isEmpty()` ([bài 05](05-giao-dien-thymeleaf.md)). `${@productService.imageUrl(p)}`: xem Bước 9.
 
 ---
 

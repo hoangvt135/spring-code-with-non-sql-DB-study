@@ -132,6 +132,18 @@ Giải thích nhanh (chi tiết xem bài 05):
 - `redirect:/categories` = bảo trình duyệt chuyển sang trang danh sách (tránh bấm F5 bị gửi form lần 2).
 - Tên hàm Service là `creatCategory` (thiếu chữ **e**) — đúng như trong `CategoryService.java` hiện tại. Nếu bạn sửa lại tên cho đúng chính tả thì nhớ sửa ở cả `CategoryController`.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+
+Bước này chỉ gọi **một** hàm có sẵn: `model.addAttribute(...)`. Những cái còn lại đều do mình viết:
+
+- `categoryService.findAll()`, `findById`, `creatCategory`, `updateCategory`, `delete`: hàm tự viết trong `CategoryService`. Bên trong chúng mới gọi tới hàm có sẵn của `JpaRepository`.
+- `new Category()`: gọi constructor rỗng `public Category() {}` mình tự viết trong `Category.java`.
+- `category.getId()`: getter tự viết.
+
+Đã gặp ở bài trước: `model.addAttribute` ([bài 05](05-giao-dien-thymeleaf.md)).
+
 ---
 
 ## Bước 2 — Trang danh sách `categories/list.html`
@@ -180,6 +192,16 @@ Tạo thư mục `src/main/resources/templates/categories/` (nếu chưa có), r
 Chú ý:
 - `layout:decorate="~{fragments/layout}"` — layout của repo này nằm ở `templates/fragments/layout.html`, nên phải ghi `fragments/layout` (bài 07 ghi `~{layout}` vì lúc đó layout nằm thẳng trong `templates/`). Quy tắc: **đường dẫn tính từ `templates/`, bỏ đuôi `.html`**.
 - Cột **Số sản phẩm** là điểm mới so với Product: nhờ quan hệ 2 chiều ở bài 06, từ một category ta đi ngược sang được danh sách product của nó. `@JsonIgnore` chỉ chặn khi xuất **JSON**, còn Thymeleaf vẫn đọc bình thường.
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Trong `${...}` của Thymeleaf, bạn gọi được thẳng hàm Java của object, giống như viết trong code Java.
+
+| Hàm | Của ai | Làm gì | Trả về |
+|---|---|---|---|
+| `c.products.size()` | `size()` của Java `List` | Đếm số phần tử trong list, giống `count($mang)` trong PHP. Đọc từ trái sang phải: `c.products` gọi getter tự viết `getProducts()`, được một `List<Product>`. Sau đó `.size()` đếm list đó. Vì `products` là quan hệ `@OneToMany` (mặc định tải **lười**), tới lúc gọi `size()` thì Hibernate mới chạy câu `SELECT` lấy sản phẩm của danh mục này. Mỗi danh mục một câu, xem được trong log nhờ `show-sql: true` | `int`. List rỗng thì `0` |
+
+Đã gặp ở bài trước: `isEmpty()` ([bài 05](05-giao-dien-thymeleaf.md)).
 
 ---
 

@@ -118,6 +118,16 @@ Cả hai form (thêm và sửa) đều dùng chung `products/form.html`, nên **
 
 > Quên dòng này ở một trong hai method thì form đó lỗi 500, vì `${categories}` là `null` và `th:each` không lặp được.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+
+Bài này **không dùng hàm có sẵn nào mới**. Kiến thức mới nằm ở thuộc tính `th:each`, `th:selected`, toán tử `?.` và annotation `@RequestParam`, mà chúng đều không phải hàm.
+
+Ở bước này, `categoryService.findAll()` là hàm mình tự viết trong `CategoryService`. Bên trong nó mới gọi `categoryRepository.findAll()` có sẵn của `JpaRepository`.
+
+Đã gặp ở bài trước: `model.addAttribute` ([bài 05](05-giao-dien-thymeleaf.md)), `findAll` của `JpaRepository` ([bài 02](02-thuc-hanh-crud.md)).
+
 ---
 
 ## Bước 3 — Vòng lặp `th:each` trong `<select>`
@@ -222,6 +232,10 @@ Form gửi lên `name=...&price=...&id=...&categoryId=3`. `@ModelAttribute Produ
 
 > Lưu ý: REST API `PUT /api/products/{id}` cũng dùng `update()`. Giờ JSON gửi lên **phải kèm** `"category": {"id": 3}`, nếu không danh mục sẽ bị xoá về `null`. Trước đây không sửa được danh mục qua PUT, giờ thì sửa được.
 
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Đã gặp ở bài trước: `productRepository.save(...)` ([bài 02](02-thuc-hanh-crud.md)). Ở đây `product` lấy từ `findById` nên đã có id, vì vậy `save` cập nhật dòng cũ (`UPDATE`) chứ không thêm dòng mới. `findById`, `setCategory`, `getCategory` là hàm mình tự viết.
+
 ---
 
 ## Bước 6 — Hiện cột Danh mục ở trang danh sách
@@ -245,6 +259,10 @@ Form gửi lên `name=...&price=...&id=...&categoryId=3`. `@ModelAttribute Produ
                     <td colspan="5">Chưa có sản phẩm nào.</td>   <!-- 4 → 5 vì thêm 1 cột -->
                 </tr>
 ```
+
+### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
+
+Đã gặp ở bài trước: `${products.isEmpty()}` ([bài 05](05-giao-dien-thymeleaf.md)). Còn `?.` trong `${p.category?.name}` là toán tử, không phải hàm (xem Bước 3).
 
 ---
 
