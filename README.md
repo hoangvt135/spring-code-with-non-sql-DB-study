@@ -18,7 +18,11 @@ java_code/
 ├── Dockerfile                # Cách đóng gói app thành image (build 2 giai đoạn)
 ├── docker-compose.yml        # Chạy app + MySQL cùng lúc
 ├── .env.example              # Mẫu biến môi trường (copy thành .env)
-├── docs/                     # 👉 Hướng dẫn học CRUD từng bước
+├── docs/
+│   ├── study/                # 👉 Bài học, làm theo thứ tự 01 → 16
+│   ├── <module>/             # Tài liệu từng module (product/, category/, user/...)
+│   ├── common_knowledge.md   # Sổ tay kiến thức chung
+│   └── ke-hoach.md           # Kế hoạch đang chờ
 └── src/main/
     ├── java/com/example/demo/
     │   ├── DemoApplication.java          # Điểm khởi động
@@ -65,17 +69,17 @@ docker compose -f docker-compose.dev.yml logs -f app-dev # xem app tự restart 
 docker compose -f docker-compose.dev.yml down           # dừng
 ```
 
-Chi tiết trong [docs/04-hot-reload.md](docs/04-hot-reload.md).
+Chi tiết trong [docs/study/04-hot-reload.md](docs/study/04-hot-reload.md).
 
 ## Bắt đầu học
 
-Mở thư mục [docs/](docs/) và làm theo thứ tự:
+Mở thư mục [docs/study/](docs/study/) và làm theo thứ tự:
 
-1. [docs/01-tong-quan.md](docs/01-tong-quan.md) — Kiến trúc & luồng một request đi qua các tầng
-2. [docs/02-thuc-hanh-crud.md](docs/02-thuc-hanh-crud.md) — Tự tay xây API CRUD cho `Product`
-3. [docs/03-cheatsheet.md](docs/03-cheatsheet.md) — Các lệnh Docker/Gradle hay dùng
-4. [docs/04-hot-reload.md](docs/04-hot-reload.md) — Vì sao Java cần build & cách bật hot reload
-5. [docs/05-giao-dien-thymeleaf.md](docs/05-giao-dien-thymeleaf.md) — Làm giao diện web với Thymeleaf (thuần Java)
-6. [docs/06-quan-he-model.md](docs/06-quan-he-model.md) — Quan hệ 1:N giữa các model (Category ↔ Product)
-7. [docs/07-tach-giao-dien-fragment.md](docs/07-tach-giao-dien-fragment.md) — Tách giao diện: Layout tổng + trang con chỉ chứa lõi (layout-dialect)
-8. [docs/08-giao-dien-category.md](docs/08-giao-dien-category.md) — Làm giao diện web (list/thêm/sửa/xoá) cho Category
+1. [docs/study/01-tong-quan.md](docs/study/01-tong-quan.md) — Kiến trúc & luồng một request đi qua các tầng
+2. [docs/study/02-thuc-hanh-crud.md](docs/study/02-thuc-hanh-crud.md) — Tự tay xây API CRUD cho `Product`
+3. [docs/study/03-cheatsheet.md](docs/study/03-cheatsheet.md) — Các lệnh Docker/Gradle hay dùng
+4. [docs/study/04-hot-reload.md](docs/study/04-hot-reload.md) — Vì sao Java cần build & cách bật hot reload
+5. [docs/study/05-giao-dien-thymeleaf.md](docs/study/05-giao-dien-thymeleaf.md) — Làm giao diện web với Thymeleaf (thuần Java)
+6. [docs/study/06-quan-he-model.md](docs/study/06-quan-he-model.md) — Quan hệ 1:N giữa các model (Category ↔ Product)
+7. [docs/study/07-tach-giao-dien-fragment.md](docs/study/07-tach-giao-dien-fragment.md) — Tách giao diện: Layout tổng + trang con chỉ chứa lõi (layout-dialect)
+8. [docs/study/08-giao-dien-category.md](docs/study/08-giao-dien-category.md) — Làm giao diện web (list/thêm/sửa/xoá) cho Category

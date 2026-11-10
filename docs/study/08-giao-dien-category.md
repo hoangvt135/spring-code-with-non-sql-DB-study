@@ -134,7 +134,7 @@ Giải thích nhanh (chi tiết xem bài 05):
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 Bước này chỉ gọi **một** hàm có sẵn: `model.addAttribute(...)`. Những cái còn lại đều do mình viết:
 
@@ -311,4 +311,4 @@ Rút ra: khi thêm model thứ 3 (ví dụ `Tag`), bạn chỉ cần xem lại *
 3. **Cột Danh mục ở trang sản phẩm**: thêm cột vào `products/list.html` hiển thị `${p.category?.name}` (dấu `?.` để không lỗi khi product chưa có danh mục).
 4. **Xem sản phẩm theo danh mục**: thêm trang `GET /categories/{id}` liệt kê `category.products` của một danh mục.
 
-➡️ Quay lại tổng quan: [../README.md](../README.md)
+➡️ Quay lại tổng quan: [../README.md](../../README.md)

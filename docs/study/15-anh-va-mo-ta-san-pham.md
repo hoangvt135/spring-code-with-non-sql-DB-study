@@ -325,7 +325,7 @@ Mấy điểm cần để ý:
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Các hàm dưới đây **không phải do mình viết**. Chúng có sẵn trong Java (nhóm `java.nio.file` để làm việc với file/thư mục, nhóm `java.util`) hoặc trong Spring (`MultipartFile`, `StringUtils`). Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Các hàm dưới đây **không phải do mình viết**. Chúng có sẵn trong Java (nhóm `java.nio.file` để làm việc với file/thư mục, nhóm `java.util`) hoặc trong Spring (`MultipartFile`, `StringUtils`). Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 #### File được upload: `MultipartFile` (Spring Web)
 
@@ -370,7 +370,7 @@ Dễ nhớ: hàm của `Path` chỉ tính toán trên chữ của đường dẫ
 | `new RuntimeException(message, e)` | Java | Tạo lỗi mới, kèm **lỗi gốc** `e` làm "nguyên nhân". Khi in ra log sẽ có thêm dòng `Caused by: ...` cho biết lỗi thật là gì | object `RuntimeException` |
 | `log.warn(...)` | SLF4J `Logger` | Như `log.info` / `log.error` ([bài 14](14-moi-truong-mongodb-redis.md)), nhưng ở mức `WARN`: có vấn đề, nhưng app vẫn chạy tiếp được | `void` |
 
-`IOException` (`java.io`) là lỗi đọc/ghi file. Ở bước này nó do `Files.createDirectories`, `file.transferTo` và `Files.deleteIfExists` ném ra. Java **bắt buộc** phải `catch` (hoặc khai báo `throws`) loại lỗi này, nên cả 3 chỗ đều có `try/catch`. Xem thêm: [`catch (IOException e)` và `catch (Exception e)` khác nhau thế nào?](common_knowledge.md#catch-ioexception-e-và-catch-exception-e-khác-nhau-thế-nào).
+`IOException` (`java.io`) là lỗi đọc/ghi file. Ở bước này nó do `Files.createDirectories`, `file.transferTo` và `Files.deleteIfExists` ném ra. Java **bắt buộc** phải `catch` (hoặc khai báo `throws`) loại lỗi này, nên cả 3 chỗ đều có `try/catch`. Xem thêm: [`catch (IOException e)` và `catch (Exception e)` khác nhau thế nào?](../common_knowledge.md#catch-ioexception-e-và-catch-exception-e-khác-nhau-thế-nào).
 
 Đã gặp ở bài trước: `LoggerFactory.getLogger` ([bài 13](13-du-lieu-mau-seeder.md)), `log.info` với `{}` ([bài 14](14-moi-truong-mongodb-redis.md)), `e.getMessage()` ([bài 12](12-dang-nhap-spring-security.md)), `new IllegalArgumentException(...)` ([bài 02](02-thuc-hanh-crud.md)).
 
@@ -936,4 +936,4 @@ curl -s -u admin:admin123 http://localhost:8093/api/products | head -c 400
 
 ➡️ Bài sau: [15.5 — Reset dữ liệu và chạy lại seeder khi đổi cấu trúc bảng](15.5-reset-du-lieu-va-chay-lai-seeder.md)
 
-➡️ Quay lại tổng quan: [../README.md](../README.md)
+➡️ Quay lại tổng quan: [../README.md](../../README.md)

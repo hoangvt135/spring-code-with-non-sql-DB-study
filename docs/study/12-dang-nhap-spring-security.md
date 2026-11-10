@@ -187,7 +187,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Các hàm trong bài này **không phải do mình viết**. Chúng có sẵn trong **Spring Data JPA** (bước này), **Spring Security** (từ Bước 4, có được nhờ dòng `spring-boot-starter-security` ở Bước 1), **Thymeleaf** hoặc Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Các hàm trong bài này **không phải do mình viết**. Chúng có sẵn trong **Spring Data JPA** (bước này), **Spring Security** (từ Bước 4, có được nhờ dòng `spring-boot-starter-security` ở Bước 1), **Thymeleaf** hoặc Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 Hai hàm ở bước này hơi đặc biệt: **mình khai báo** tên hàm, nhưng **không viết thân hàm**. Lúc app khởi động, Spring Data đọc tên hàm rồi tự sinh câu SQL. Loại hàm này gọi là *query method* (hàm truy vấn theo tên).
 
@@ -370,7 +370,7 @@ Lambda của `formLogin(...)`, `logout(...)`, `csrf(...)` thì đơn giản hơn
 
 | Hàm | Làm gì | Trả về |
 |---|---|---|
-| `requestMatchers("/login", "/css/**", ...)` | Chọn URL theo mẫu. Nhận 1 hoặc nhiều chuỗi (kiểu `String...`, xem [sổ tay](common_knowledge.md#string-args-3-dấu-chấm-trong-run-là-gì)). `*` khớp một đoạn đường dẫn, `**` khớp mọi thứ phía sau: `/css/**` khớp cả `/css/app.css` lẫn `/css/a/b.css` | `AuthorizedUrl` (luật viết dở) |
+| `requestMatchers("/login", "/css/**", ...)` | Chọn URL theo mẫu. Nhận 1 hoặc nhiều chuỗi (kiểu `String...`, xem [sổ tay](../common_knowledge.md#string-args-3-dấu-chấm-trong-run-là-gì)). `*` khớp một đoạn đường dẫn, `**` khớp mọi thứ phía sau: `/css/**` khớp cả `/css/app.css` lẫn `/css/a/b.css` | `AuthorizedUrl` (luật viết dở) |
 | `anyRequest()` | Chọn mọi request **chưa khớp** luật nào ở trên | `AuthorizedUrl` |
 | `permitAll()` | Ai cũng vào được, kể cả người chưa đăng nhập | bảng luật |
 | `authenticated()` | Phải đăng nhập, vai trò nào cũng được | bảng luật |
@@ -481,7 +481,7 @@ Vì có **hai class cùng tên `User`**: class của mình (`com.example.demo.us
 
 | Hàm | Của ai | Làm gì | Trả về |
 |---|---|---|---|
-| `user.getPassword().length()` | Java `String` | Đếm số ký tự của chuỗi | `int`. Gọi trên `null` thì ném `NullPointerException`, nên code kiểm tra `== null` **trước**: với `\|\|`, vế trái đúng thì Java bỏ qua vế phải (giống `&&`, xem [sổ tay](common_knowledge.md#return-a--b--c-hoạt-động-thế-nào-toán-tử--và-cơ-chế-đoản-mạch)) |
+| `user.getPassword().length()` | Java `String` | Đếm số ký tự của chuỗi | `int`. Gọi trên `null` thì ném `NullPointerException`, nên code kiểm tra `== null` **trước**: với `\|\|`, vế trái đúng thì Java bỏ qua vế phải (giống `&&`, xem [sổ tay](../common_knowledge.md#return-a--b--c-hoạt-động-thế-nào-toán-tử--và-cơ-chế-đoản-mạch)) |
 | `passwordEncoder.encode(raw)` | interface `PasswordEncoder` (Spring Security). Object thật là `BCryptPasswordEncoder` tạo ở Bước 4 | Mã hoá mật khẩu gốc bằng BCrypt, mỗi lần một salt ngẫu nhiên | `String` dài 60 ký tự, dạng `$2a$10$...`. Cùng đầu vào nhưng mỗi lần gọi ra một chuỗi khác |
 | `loadUserByUsername(username)` | interface `UserDetailsService` (Spring Security) | Tên hàm, tham số, kiểu trả về đều do Spring quy định, mình chỉ viết thân hàm (vì thế có `@Override`). Spring gọi hàm này khi có người bấm Đăng nhập hoặc gửi `curl -u` | `UserDetails`: thông tin user theo "khuôn" của Spring Security |
 | `new UsernameNotFoundException(msg)` | Spring Security | Tạo lỗi "không có user này". Nó là một loại `RuntimeException`. Spring bắt lỗi này rồi **đổi thành lỗi chung "sai thông tin đăng nhập"** → chuyển về `/login?error`. Vì thế câu `"Không có user ..."` không bao giờ hiện ra trình duyệt, đúng tinh thần "không nói rõ cái nào sai" ở Bước 7 | (constructor, tạo ra object lỗi để `throw`) |
@@ -858,4 +858,4 @@ curl -u an:123456 -H 'Content-Type: application/json' \
 4. **Xoá bằng POST**: link Xoá hiện là `GET /products/{id}/delete`, nên CSRF **không bảo vệ** nó (giống lý do ở phần đăng xuất). Đổi thành một form `POST` nhỏ có nút Xoá, và `@GetMapping` → `@PostMapping` trong controller.
 5. **Đã đăng nhập thì khỏi vào trang login**: trong `loginForm()`, nhận thêm tham số `java.security.Principal principal`. Nếu `principal != null` (đã đăng nhập) thì `return "redirect:/products"`.
 
-➡️ Quay lại tổng quan: [../README.md](../README.md)
+➡️ Quay lại tổng quan: [../README.md](../../README.md)

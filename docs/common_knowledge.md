@@ -27,7 +27,7 @@ Mỗi mục ghi rõ nó được hỏi ở bài nào, nên có thể đọc riê
 
 ## Chữ `groovy` (`yaml`, `java`...) sau dấu ``` trong bài học là gì? Groovy là gì?
 
-> Hỏi ở: [Bài 14 — Bước 3: Thêm thư viện vào `build.gradle`](14-moi-truong-mongodb-redis.md#bước-3--thêm-thư-viện-vào-buildgradle)
+> Hỏi ở: [Bài 14 — Bước 3: Thêm thư viện vào `build.gradle`](study/14-moi-truong-mongodb-redis.md#bước-3--thêm-thư-viện-vào-buildgradle)
 
 ### Đó là nhãn ngôn ngữ của khối code Markdown, **không phải code cần copy**
 
@@ -68,7 +68,7 @@ Vì `build.gradle` được viết bằng **ngôn ngữ Groovy**.
 
 ## `management.endpoints` và `management.endpoint` (có/không có chữ `s`) khác nhau thế nào?
 
-> Hỏi ở: [Bài 14 — Bước 4: Cấu hình kết nối trong `application.yml`](14-moi-truong-mongodb-redis.md#bước-4--cấu-hình-kết-nối-trong-applicationyml)
+> Hỏi ở: [Bài 14 — Bước 4: Cấu hình kết nối trong `application.yml`](study/14-moi-truong-mongodb-redis.md#bước-4--cấu-hình-kết-nối-trong-applicationyml)
 
 Cả hai đều là cấu hình của **Spring Boot Actuator**. Actuator là thư viện sinh sẵn các đường dẫn `/actuator/...` để theo dõi app. Mỗi đường dẫn như vậy gọi là một **endpoint**: `health`, `info`, `metrics`, `env`, `beans`...
 
@@ -103,7 +103,7 @@ Nếu viết nhầm `management.endpoints.health.show-details`, tức là thêm 
 
 ## `String... args` (3 dấu chấm) trong `run()` là gì?
 
-> Hỏi ở: [Bài 14 — Bước 5: `NoSqlConnectionCheck`](14-moi-truong-mongodb-redis.md#bước-5--thử-ghiđọc-lúc-khởi-động-nosqlconnectioncheck) (cú pháp này xuất hiện lần đầu ở [Bài 13 — Bước 1: `DataSeeder`](13-du-lieu-mau-seeder.md#bước-1--khung-class-dataseeder))
+> Hỏi ở: [Bài 14 — Bước 5: `NoSqlConnectionCheck`](study/14-moi-truong-mongodb-redis.md#bước-5--thử-ghiđọc-lúc-khởi-động-nosqlconnectioncheck) (cú pháp này xuất hiện lần đầu ở [Bài 13 — Bước 1: `DataSeeder`](study/13-du-lieu-mau-seeder.md#bước-1--khung-class-dataseeder))
 
 ### Đây là **varargs**: tham số nhận "bao nhiêu giá trị cũng được"
 
@@ -152,7 +152,7 @@ Trong project này app chạy bằng Docker/Gradle, không truyền thêm tham s
 
 ## BLOB là gì? "Document" của MongoDB có phải là "tài liệu"? Lưu ảnh vào DB hay ra file?
 
-> Hỏi khi chuẩn bị [Bài 15 — Ảnh và mô tả cho sản phẩm](15-anh-va-mo-ta-san-pham.md#tư-vấn-trước-khi-code-lưu-ảnh-ở-đâu-file-vật-lý-hay-blob), liên quan tới MongoDB ở [Bài 14](14-moi-truong-mongodb-redis.md). Bảng so sánh đầy đủ nằm trong bài 15.
+> Hỏi khi chuẩn bị [Bài 15 — Ảnh và mô tả cho sản phẩm](study/15-anh-va-mo-ta-san-pham.md#tư-vấn-trước-khi-code-lưu-ảnh-ở-đâu-file-vật-lý-hay-blob), liên quan tới MongoDB ở [Bài 14](study/14-moi-truong-mongodb-redis.md). Bảng so sánh đầy đủ nằm trong bài 15.
 
 - **BLOB** (*Binary Large Object*) là cách gọi chung cho "một cục byte lớn lưu thẳng trong DB": ảnh, PDF, zip... Đây **không phải tính năng riêng của MongoDB**. MySQL có kiểu cột `BLOB` / `MEDIUMBLOB` (16MB) / `LONGBLOB` (4GB). MongoDB có kiểu `BinData`, nhưng cả document tối đa 16MB. File lớn hơn thì dùng **GridFS**: cắt file thành mảnh 255KB rồi lưu vào 2 collection `fs.files` + `fs.chunks`.
 - **"Document" trong MongoDB = một bản ghi dạng JSON**, tương đương một dòng trong bảng MySQL. Nó **không** có nghĩa là "tài liệu" kiểu Word/PDF. MongoDB không có ưu thế đặc biệt nào trong việc lưu file so với MySQL.
@@ -163,7 +163,7 @@ Trong project này app chạy bằng Docker/Gradle, không truyền thêm tham s
 
 ## `@Column`: vì sao có trường khai báo, có trường không?
 
-> Hỏi ở: [Bài 15 — Bước 3: Thêm 2 trường vào `Product`](15-anh-va-mo-ta-san-pham.md#bước-3--thêm-2-trường-vào-product). `@Column` xuất hiện lần đầu ở [Bài 02 — Bước 1: Entity](02-thuc-hanh-crud.md#bước-1--entity-mô-tả-bảng-dữ-liệu).
+> Hỏi ở: [Bài 15 — Bước 3: Thêm 2 trường vào `Product`](study/15-anh-va-mo-ta-san-pham.md#bước-3--thêm-2-trường-vào-product). `@Column` xuất hiện lần đầu ở [Bài 02 — Bước 1: Entity](study/02-thuc-hanh-crud.md#bước-1--entity-mô-tả-bảng-dữ-liệu).
 
 ### Mọi trường của `@Entity` đều tự thành cột, không cần `@Column`
 
@@ -209,7 +209,7 @@ Trong `User`, dòng `@Column(nullable = true)` ở trường `role` là **thừa
 
 ## `catch (IOException e)` và `catch (Exception e)` khác nhau thế nào?
 
-> Hỏi ở: [Bài 15 — Bước 4: `FileStorageService`: lưu và xoá file](15-anh-va-mo-ta-san-pham.md#bước-4--filestorageservice-lưu-và-xoá-file)
+> Hỏi ở: [Bài 15 — Bước 4: `FileStorageService`: lưu và xoá file](study/15-anh-va-mo-ta-san-pham.md#bước-4--filestorageservice-lưu-và-xoá-file)
 
 ### Khác nhau ở chỗ "bắt rộng hay hẹp"
 
@@ -254,7 +254,7 @@ try {
 }
 ```
 
-- Với `catch (Exception e)`: lỗi "tên file không hợp lệ" bị đổi thành "Lưu file thất bại", tức là thông báo sai bản chất. Controller muốn `catch (IllegalArgumentException e)` để hiện chữ đỏ trên form ([Bài 15 — Bài tập 2](15-anh-va-mo-ta-san-pham.md#bài-tập)) sẽ **không bắt được nữa**, vì lỗi đã bị gói thành `RuntimeException`.
+- Với `catch (Exception e)`: lỗi "tên file không hợp lệ" bị đổi thành "Lưu file thất bại", tức là thông báo sai bản chất. Controller muốn `catch (IllegalArgumentException e)` để hiện chữ đỏ trên form ([Bài 15 — Bài tập 2](study/15-anh-va-mo-ta-san-pham.md#bài-tập)) sẽ **không bắt được nữa**, vì lỗi đã bị gói thành `RuntimeException`.
 - Với `catch (IOException e)`: chỉ lỗi ghi đĩa mới bị gói lại, còn `IllegalArgumentException` vẫn giữ nguyên và bay lên controller.
 
 Trong `delete()` còn tệ hơn, nếu viết:
@@ -278,7 +278,7 @@ thì **mọi lỗi đều biến mất không dấu vết**, kể cả lỗi ch�
 
 ## Dấu `{}` trong `log.info(...)` / `log.warn(...)` là gì?
 
-> Hỏi ở: [Bài 15 — Bước 4: `FileStorageService`: lưu và xoá file](15-anh-va-mo-ta-san-pham.md#bước-4--filestorageservice-lưu-và-xoá-file). Cùng kiểu viết này cũng có ở [Bài 14](14-moi-truong-mongodb-redis.md).
+> Hỏi ở: [Bài 15 — Bước 4: `FileStorageService`: lưu và xoá file](study/15-anh-va-mo-ta-san-pham.md#bước-4--filestorageservice-lưu-và-xoá-file). Cùng kiểu viết này cũng có ở [Bài 14](study/14-moi-truong-mongodb-redis.md).
 
 ### `{}` là chỗ trống, được điền lần lượt bằng các tham số phía sau
 
@@ -351,8 +351,8 @@ Viết `%s` trong `log.info` thì SLF4J không hiểu, nên sẽ in nguyên ch�
 
 ## Java có giá trị mặc định cho tham số (`String description = ""`) không? Nạp chồng (overload) là gì?
 
-> Hỏi ở: [Bài 13 — Bước 3: Danh mục và sản phẩm mẫu](13-du-lieu-mau-seeder.md#bước-3--danh-mục-và-sản-phẩm-mẫu) (khi muốn `createProduct()` nhận thêm `description` từ [Bài 15](15-anh-va-mo-ta-san-pham.md)).
-> Phần "Tìm hiểu kỹ hơn về nạp chồng" được hỏi thêm ở [Bài 16 — Bước 2](16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common), khi so sánh với [`@Override`](#override-là-gì-bỏ-đi-có-sao-không-khác-gì-nạp-chồng-overloading).
+> Hỏi ở: [Bài 13 — Bước 3: Danh mục và sản phẩm mẫu](study/13-du-lieu-mau-seeder.md#bước-3--danh-mục-và-sản-phẩm-mẫu) (khi muốn `createProduct()` nhận thêm `description` từ [Bài 15](study/15-anh-va-mo-ta-san-pham.md)).
+> Phần "Tìm hiểu kỹ hơn về nạp chồng" được hỏi thêm ở [Bài 16 — Bước 2](study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common), khi so sánh với [`@Override`](#override-là-gì-bỏ-đi-có-sao-không-khác-gì-nạp-chồng-overloading).
 
 ### Không. Java **không có** default parameter
 
@@ -516,7 +516,7 @@ Nên giá trị mặc định cho `String` phải là `""`, không phải `''` (
 
 ## `return a() && b() && c();` hoạt động thế nào? (toán tử `&&` và cơ chế "đoản mạch")
 
-> Hỏi ở: câu hỏi ngoài giáo trình (đoạn code mẫu trên mạng). Liên hệ với [Bài 02 — Bước 3: Service](02-thuc-hanh-crud.md#bước-3--service-chứa-logic-nghiệp-vụ), nơi có `product.getPrice() != null && product.getPrice() < 0`.
+> Hỏi ở: câu hỏi ngoài giáo trình (đoạn code mẫu trên mạng). Liên hệ với [Bài 02 — Bước 3: Service](study/02-thuc-hanh-crud.md#bước-3--service-chứa-logic-nghiệp-vụ), nơi có `product.getPrice() != null && product.getPrice() < 0`.
 
 Đoạn code mẫu:
 
@@ -584,11 +584,11 @@ Còn `&` và `|` (một ký tự) khi dùng với `boolean` thì **không đoả
 
 ## Đưa hằng số (ví dụ `RECENT_TTL` 30 ngày) sang `application.yml` được không? `@Value` có đọc được `Duration` không?
 
-> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis), dòng `private static final Duration RECENT_TTL = Duration.ofDays(30);`
+> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](study/16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis), dòng `private static final Duration RECENT_TTL = Duration.ofDays(30);`
 
 ### Được. Và `@Value` đọc thẳng ra `Duration` luôn
 
-Làm giống hệt cách bài 15 đọc `app.upload.dir` (xem [Bài 15 — Bước 1](15-anh-va-mo-ta-san-pham.md#bước-1--cấu-hình-trong-applicationyml)), chỉ khác là kiểu tham số là `Duration` thay vì `String`.
+Làm giống hệt cách bài 15 đọc `app.upload.dir` (xem [Bài 15 — Bước 1](study/15-anh-va-mo-ta-san-pham.md#bước-1--cấu-hình-trong-applicationyml)), chỉ khác là kiểu tham số là `Duration` thay vì `String`.
 
 **1. `application.yml`**: thêm vào khối `app:` đang có:
 
@@ -620,7 +620,7 @@ Trong `recordView()` đổi `RECENT_TTL` thành `recentTtl`. Nhớ thêm `import
 
 Spring Boot tự đổi chuỗi `"30d"` thành `Duration.ofDays(30)`. Đây cũng chính là cơ chế đang đọc `timeout: 2s` của Redis ở Bước 1 bài 16.
 
-> Bài 16 không dùng `@Value` cho chỗ này. Bài đưa các giá trị vào file `config/stats.properties`, và đọc qua class dùng chung `common/AppConfig` (`config.getDuration("app.stats.recent-ttl")`), xem [Bước 2](16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common). `AppConfig` đọc từ `Environment` của Spring, tức là cùng cơ chế với `@Value`, nên chuỗi `30d` vẫn được đổi thành `Duration` y như trên.
+> Bài 16 không dùng `@Value` cho chỗ này. Bài đưa các giá trị vào file `config/stats.properties`, và đọc qua class dùng chung `common/AppConfig` (`config.getDuration("app.stats.recent-ttl")`), xem [Bước 2](study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common). `AppConfig` đọc từ `Environment` của Spring, tức là cùng cơ chế với `@Value`, nên chuỗi `30d` vẫn được đổi thành `Duration` y như trên.
 
 ### Vì sao phải bỏ `static final`?
 
@@ -658,7 +658,7 @@ Muốn đổi theo môi trường mà không sửa file, dùng lại cú pháp b
 
 ## Mỗi module một class cấu hình riêng (`StatsProperties`, `ProductProperties`) được không? `@ConfigurationProperties` là gì?
 
-> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis), câu hỏi nối tiếp mục [Đưa hằng số sang `application.yml`](#đưa-hằng-số-ví-dụ-recent_ttl-30-ngày-sang-applicationyml-được-không-value-có-đọc-được-duration-không). Ý tưởng ban đầu: `product/product_config.java`, `stats/stat_config.java`. Sau khi bàn tiếp, bài 16 **không** dùng cách này. Bài chọn mỗi module một file `.properties` và một hàm đọc dùng chung `common/AppConfig`, xem [Bước 2](16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) và mục [file `.ini` của PHP](#java-có-file-cấu-hình-kiểu-ini-của-php-key--value-không-có-cần-tự-viết-hàm-đọc-chung-không) bên dưới. Mục này giữ lại để biết thêm một cách làm phổ biến của Spring Boot.
+> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](study/16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis), câu hỏi nối tiếp mục [Đưa hằng số sang `application.yml`](#đưa-hằng-số-ví-dụ-recent_ttl-30-ngày-sang-applicationyml-được-không-value-có-đọc-được-duration-không). Ý tưởng ban đầu: `product/product_config.java`, `stats/stat_config.java`. Sau khi bàn tiếp, bài 16 **không** dùng cách này. Bài chọn mỗi module một file `.properties` và một hàm đọc dùng chung `common/AppConfig`, xem [Bước 2](study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) và mục [file `.ini` của PHP](#java-có-file-cấu-hình-kiểu-ini-của-php-key--value-không-có-cần-tự-viết-hàm-đọc-chung-không) bên dưới. Mục này giữ lại để biết thêm một cách làm phổ biến của Spring Boot.
 
 ### Được, và đây là cách Spring Boot khuyên dùng khi một module có nhiều cấu hình
 
@@ -750,7 +750,7 @@ Cũng được: tạo `src/main/resources/stats.yml`, rồi trong `application.y
 
 ## Java có file cấu hình kiểu `.ini` của PHP (`key = "value"`) không? Có cần tự viết hàm đọc chung không?
 
-> Hỏi ở: [Bài 16 — Bước 2: Mỗi module một file `.properties`](16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common). Người hỏi từng dùng file `.ini` bên PHP và một hàm đọc cấu hình dùng chung. Câu hỏi này dẫn tới việc viết lại Bước 2 của bài 16.
+> Hỏi ở: [Bài 16 — Bước 2: Mỗi module một file `.properties`](study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common). Người hỏi từng dùng file `.ini` bên PHP và một hàm đọc cấu hình dùng chung. Câu hỏi này dẫn tới việc viết lại Bước 2 của bài 16.
 
 ### Có: file `.properties`, và Spring Boot đọc sẵn nó
 
@@ -822,7 +822,7 @@ Comment tiếng Việt (dòng bắt đầu bằng `#`) thì không sao, vì comm
 
 ### Project này làm thế nào (bài 16)
 
-[Bài 16 Bước 2](16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) làm đúng theo kiểu `.ini` + hàm đọc chung:
+[Bài 16 Bước 2](study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) làm đúng theo kiểu `.ini` + hàm đọc chung:
 
 - **`application.yml`** chỉ giữ cấu hình **của Spring** (DB, Redis, log...).
 - **Mỗi module một file** `src/main/resources/config/<module>.properties` (`stats`, `product`, `upload`), chỉ gồm các dòng `key=value`.
@@ -835,7 +835,7 @@ Comment tiếng Việt (dòng bắt đầu bằng `#`) thì không sao, vì comm
 
 ## Mỗi class đều phải tự khai báo logger. Có tạo một logger "common" rồi import vào được không?
 
-> Hỏi ở: [Bài 16](16-luot-xem-top-san-pham-redis.md), khi thấy file nào cũng có dòng `private static final Logger log = LoggerFactory.getLogger(NoSqlConnectionCheck.class);`. Phần thực hành để dành cho **bài 17** (xem [ke-hoach.md](ke-hoach.md)).
+> Hỏi ở: [Bài 16](study/16-luot-xem-top-san-pham-redis.md), khi thấy file nào cũng có dòng `private static final Logger log = LoggerFactory.getLogger(NoSqlConnectionCheck.class);`. Phần thực hành để dành cho **bài 17** (xem [ke-hoach.md](ke-hoach.md)).
 
 ### Vì sao mỗi class lại có logger riêng?
 
@@ -891,7 +891,7 @@ public class ProductService {
 
 ## `@Override` là gì? Bỏ đi có sao không? Khác gì nạp chồng (overloading)?
 
-> Hỏi ở: [Bài 16 — Bước 2, mục ③ `ModuleConfigLoader`](16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) (gõ nhầm `postProcessEnviroment`, thiếu chữ `n`, và bị báo 2 lỗi)
+> Hỏi ở: [Bài 16 — Bước 2, mục ③ `ModuleConfigLoader`](study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) (gõ nhầm `postProcessEnviroment`, thiếu chữ `n`, và bị báo 2 lỗi)
 
 ### Ghi đè (override) là gì?
 
@@ -959,7 +959,7 @@ Hai khái niệm này tên gần giống nhau nhưng khác hẳn nhau. Nạp ch�
 
 ## Kiểu dữ liệu viết thường (`int`, `long`) và viết hoa (`Integer`, `Long`, `String`, `Duration`) khác nhau thế nào?
 
-> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis) (thấy `private final Duration recentTtl;` nhưng `private final int recentLimit;`)
+> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](study/16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis) (thấy `private final Duration recentTtl;` nhưng `private final int recentLimit;`)
 
 ### Viết hoa hay viết thường **có ý nghĩa**, không phải tuỳ thích
 
@@ -1071,7 +1071,7 @@ Với số nhỏ (-128 → 127) thì `==` "tình cờ" ra `true` do Java dùng l
 
 ## Hàm có sẵn của thư viện (ví dụ `opsForZSet`) ở đâu ra? Làm sao biết nó làm gì?
 
-> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis) (hiểu các hàm tự viết trong service, nhưng không hiểu `opsForZSet().incrementScore(...)`)
+> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](study/16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis) (hiểu các hàm tự viết trong service, nhưng không hiểu `opsForZSet().incrementScore(...)`)
 
 ### Hàm đó từ đâu tới?
 
@@ -1118,13 +1118,13 @@ ZSetOperations<String, String> zset = redisTemplate.opsForZSet();
 Double views = zset.incrementScore(VIEWS_KEY, id, 1);
 ```
 
-Spring chia lệnh Redis theo kiểu dữ liệu: `opsForValue()` cho String, `opsForList()` cho List, `opsForZSet()` cho Sorted Set, `opsForHash()` cho Hash... Bảng đầy đủ các hàm dùng trong bài 16 (tham số, kết quả trả về, lệnh Redis tương ứng) nằm ở phần **📖 Tra cứu** cuối mỗi bước của bài 16, ví dụ [Bước 3](16-luot-xem-top-san-pham-redis.md#-tra-cứu-các-hàm-có-sẵn-dùng-trong-bước-này-1).
+Spring chia lệnh Redis theo kiểu dữ liệu: `opsForValue()` cho String, `opsForList()` cho List, `opsForZSet()` cho Sorted Set, `opsForHash()` cho Hash... Bảng đầy đủ các hàm dùng trong bài 16 (tham số, kết quả trả về, lệnh Redis tương ứng) nằm ở phần **📖 Tra cứu** cuối mỗi bước của bài 16, ví dụ [Bước 3](study/16-luot-xem-top-san-pham-redis.md#-tra-cứu-các-hàm-có-sẵn-dùng-trong-bước-này-1).
 
 ---
 
 ## Dấu `()` và dấu `<>` khác nhau thế nào? (`List<Long>`, `new HashMap<>()`, generic)
 
-> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis) (hàm thường dùng `()`, nhưng có chỗ lại có `<>`, ví dụ `Set<TypedTuple<String>>`, `new HashMap<>()`)
+> Hỏi ở: [Bài 16 — Bước 3: `ProductStatsService`](study/16-luot-xem-top-san-pham-redis.md#bước-3--productstatsservice-mọi-thao-tác-với-redis) (hàm thường dùng `()`, nhưng có chỗ lại có `<>`, ví dụ `Set<TypedTuple<String>>`, `new HashMap<>()`)
 
 ### Một câu: `()` chứa **giá trị**, `<>` chứa **kiểu**
 

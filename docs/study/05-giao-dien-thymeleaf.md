@@ -111,7 +111,7 @@ public class ProductViewController {
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Hàm dưới đây **không phải do mình viết**, mà có sẵn trong **Spring MVC** (có được nhờ `spring-boot-starter-web` trong `build.gradle`). Các hàm `service.findAll()`, `service.create(...)`... là của `ProductService` bạn tự viết ở bài 02. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Hàm dưới đây **không phải do mình viết**, mà có sẵn trong **Spring MVC** (có được nhờ `spring-boot-starter-web` trong `build.gradle`). Các hàm `service.findAll()`, `service.create(...)`... là của `ProductService` bạn tự viết ở bài 02. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 | Hàm | Của ai | Làm gì | Trả về |
 |---|---|---|---|
@@ -275,4 +275,4 @@ Bạn sẽ thấy trang danh sách. Bấm **"+ Thêm sản phẩm"** → điền
 3. **Trang chủ dẫn tới danh sách**: sửa `HelloController` hoặc thêm link ở `/` trỏ tới `/products`.
 4. **Thông báo sau khi lưu**: hiện dòng "Đã lưu thành công" trên trang danh sách (gợi ý: dùng `RedirectAttributes.addFlashAttribute`).
 
-➡️ Quay lại tổng quan các file: [../README.md](../README.md)
+➡️ Quay lại tổng quan các file: [../README.md](../../README.md)

@@ -126,7 +126,7 @@ public class ProductService {
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Các hàm dưới đây **không phải do mình viết**. `findAll`, `findById`, `save`, `deleteById` có sẵn trong thư viện **Spring Data JPA**: `ProductRepository` được thừa hưởng chúng nhờ dòng `extends JpaRepository<Product, Long>` ở Bước 2. `Optional` và các class lỗi (`RuntimeException`...) thì có sẵn trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Các hàm dưới đây **không phải do mình viết**. `findAll`, `findById`, `save`, `deleteById` có sẵn trong thư viện **Spring Data JPA**: `ProductRepository` được thừa hưởng chúng nhờ dòng `extends JpaRepository<Product, Long>` ở Bước 2. `Optional` và các class lỗi (`RuntimeException`...) thì có sẵn trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 | Hàm | Của ai | Làm gì | Trả về |
 |---|---|---|---|

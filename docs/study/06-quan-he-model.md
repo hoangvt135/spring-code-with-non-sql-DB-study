@@ -89,7 +89,7 @@ public class Category {
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Hàm dưới đây **không phải do mình viết**, mà có sẵn trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Hàm dưới đây **không phải do mình viết**, mà có sẵn trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 | Hàm | Của ai | Làm gì | Trả về |
 |---|---|---|---|
@@ -373,4 +373,4 @@ Bạn sẽ thấy cột `category_id` được điền → quan hệ đã hoạt
 3. **Quan hệ N:N**: thử tạo `Tag` (nhãn) với quan hệ nhiều-nhiều tới `Product` bằng `@ManyToMany`.
 4. **Xoá an toàn**: thử xoá một category đang có product → xem lỗi ràng buộc khoá ngoại, rồi tìm hiểu `orphanRemoval` / `cascade`.
 
-➡️ Quay lại tổng quan: [../README.md](../README.md)
+➡️ Quay lại tổng quan: [../README.md](../../README.md)

@@ -243,4 +243,4 @@ Còn component React/Vue là **object sống trong trình duyệt** (có state, 
 3. **CSS/JS riêng cho một trang**: dùng `layout:fragment` trong `<head>` để một trang nạp thêm file css riêng ngoài `app.css`.
 4. **Đổi title có hậu tố**: sửa `title-pattern` thành `$CONTENT_TITLE - Demo Shop` và xem tiêu đề tab đổi.
 
-➡️ Quay lại tổng quan: [../README.md](../README.md)
+➡️ Quay lại tổng quan: [../README.md](../../README.md)

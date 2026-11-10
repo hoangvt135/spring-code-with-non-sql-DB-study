@@ -370,7 +370,7 @@ Bài sau sẽ dùng cách tiện hơn: `MongoRepository` (giống hệt `JpaRepo
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Các hàm dưới đây **không phải do mình viết**. Chúng nằm trong thư viện **Spring Data Redis** và **Spring Data MongoDB** (có được nhờ 2 starter ở Bước 3), thư viện **BSON** đi kèm driver MongoDB (class `Document`), hoặc trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Các hàm dưới đây **không phải do mình viết**. Chúng nằm trong thư viện **Spring Data Redis** và **Spring Data MongoDB** (có được nhờ 2 starter ở Bước 3), thư viện **BSON** đi kèm driver MongoDB (class `Document`), hoặc trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 #### Đọc một dòng gọi nối nhau: `redisTemplate.opsForValue().set(...)`
 
@@ -626,4 +626,4 @@ Tên volume có tiền tố là **tên thư mục project** (`java_code`), do Do
 5. **Tìm hiểu**: Laravel cấu hình Redis bằng `REDIS_HOST`, `CACHE_STORE=redis` trong `.env`. Ánh xạ từng dòng đó sang file nào, thuộc tính nào của project Spring này? Thuộc tính nào trong Laravel **chưa có** tương đương ở đây (gợi ý: cache, session, queue)?
 6. **Đặt lại tên biến cho MySQL**: đổi `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`, `DB_ROOT_PASSWORD` thành `MYSQL_HOST`, `MYSQL_PORT`... ở **mọi chỗ**: `application.yml`, `docker-compose.yml`, `docker-compose.dev.yml`, `.env`. Dùng `grep -rn "DB_" --include="*.yml" --include=".env" .` để không sót. Sau đó `up -d` lại và kiểm tra `/actuator/health` vẫn `UP`. Hỏi: nếu trong `application.yml` sót dòng `${DB_PASSWORD:demo_pass}` (chưa đổi thành `MYSQL_PASSWORD`), vì sao app **vẫn chạy bình thường**, không báo lỗi gì? Lỗi đó sẽ chỉ lộ ra khi nào? Còn nếu sót `${DB_HOST:localhost}` thì sao?
 
-➡️ Quay lại tổng quan: [../README.md](../README.md)
+➡️ Quay lại tổng quan: [../README.md](../../README.md)

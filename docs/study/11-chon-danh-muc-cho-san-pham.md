@@ -120,7 +120,7 @@ Cả hai form (thêm và sửa) đều dùng chung `products/form.html`, nên **
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 Bài này **không dùng hàm có sẵn nào mới**. Kiến thức mới nằm ở thuộc tính `th:each`, `th:selected`, toán tử `?.` và annotation `@RequestParam`, mà chúng đều không phải hàm.
 
@@ -312,4 +312,4 @@ Cột `category_id` chứa **id** của danh mục (hoặc `NULL`). Đây chính
 3. **Link sang danh mục**: ở cột Danh mục của `list.html`, biến tên danh mục thành link tới `/categories/{id}/edit`. Nhớ xử lý trường hợp không có danh mục (gợi ý: `th:if="${p.category != null}"`).
 4. **Thử cách `th:field`**: đổi thành `<select th:field="*{category}">` (tên thuộc tính, không phải tên cột), bỏ `@RequestParam` trong `save()`, rồi thử xem lưu và chọn sẵn có chạy không. Spring Data có một bộ chuyển đổi tên `DomainClassConverter` đổi id `"3"` thành object `Category`, hãy tìm hiểu nó. So sánh với cách `categoryId` trong bài: cách nào bạn thấy dễ hiểu hơn?
 
-➡️ Quay lại tổng quan: [../README.md](../README.md)
+➡️ Quay lại tổng quan: [../README.md](../../README.md)
