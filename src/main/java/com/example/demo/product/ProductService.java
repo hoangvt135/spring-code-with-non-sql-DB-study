@@ -8,22 +8,30 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.example.demo.common.NotFoundException;
 import com.example.demo.storage.FileStorageService;
-
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import com.example.demo.common.AppConfig;
+import com.example.demo.stats.ProductStatsService;
 @Service
 public class ProductService {
     private static final Logger log = LoggerFactory.getLogger(ProductService.class);
     private ProductRepository productRepository;
     private final FileStorageService fileStorageService;
+    private final ProductStatsService productStatsService;
     private final String defaultImageUrl;
 
-    public ProductService(ProductRepository productRepository, 
-                            FileStorageService fileStorageService, 
-                            @Value("${app.product.default-image}") String defaultImage) {
+    public ProductService(ProductRepository productRepository,
+                            FileStorageService fileStorageService,
+                            ProductStatsService productStatsService,
+                            AppConfig config) {
         this.productRepository = productRepository;
         this.fileStorageService = fileStorageService;
+        this.productStatsService = productStatsService;
+
+        String defaultImage = config.getString("app.product.default-image");
         this.defaultImageUrl = "/" + defaultImage;
 
         if (!new ClassPathResource("static/" + defaultImage).exists()) {
@@ -61,6 +69,8 @@ public class ProductService {
         Product product = findById(id);
         productRepository.delete(product);
         fileStorageService.delete(product.getImagePath());
+        // Redis không biết MySQL vừa xoá gì → phải tự dọn, y như tự xoá file ảnh ở dòng trên
+        productStatsService.removeProduct(id);
     }
 
     public Product save(Product data, MultipartFile imageFile) {
@@ -82,5 +92,35 @@ public class ProductService {
             return defaultImageUrl;
         }
         return FileStorageService.URL_PREFIX + product.getImagePath();
+    }
+
+    // Top sản phẩm xem nhiều nhất: Redis cho thứ tự (danh sách id), MySQL cho dữ liệu.
+    // Lấy mấy sản phẩm là do app.stats.top-limit (config/stats.properties) quyết định, ProductService không cần biết
+    public List<Product> topViewed() {
+        return findAllInOrder(productStatsService.topProductIds());
+    }
+
+    // Các sản phẩm user vừa xem, mới nhất đứng đầu
+    public List<Product> recentlyViewed(String username) {
+        return findAllInOrder(productStatsService.recentProductIds(username));
+    }
+
+    // Lấy nhiều sản phẩm bằng 1 câu SQL, rồi xếp lại ĐÚNG thứ tự của danh sách id.
+    // Id nào không còn trong MySQL (sản phẩm đã bị xoá) → bỏ qua.
+    private List<Product> findAllInOrder(List<Long> ids) {
+        // findAllById → SELECT ... WHERE id IN (3, 1, 7): MySQL KHÔNG hứa trả về theo thứ tự 3, 1, 7
+        Map<Long, Product> byId = new HashMap<>();
+        for (Product p : productRepository.findAllById(ids)) {
+            byId.put(p.getId(), p);
+        }
+
+        List<Product> result = new ArrayList<>();
+        for (Long id : ids) {
+            Product p = byId.get(id);
+            if (p != null) {
+                result.add(p);
+            }
+        }
+        return result;
     }
 }

@@ -20,7 +20,7 @@ public class HelloController {
     public Map<String, String> home() {
         return Map.of(
                 "message", "Spring Boot đang chạy! 🎉",
-                "hint", "Xem thư mục docs/ để bắt đầu thực hành CRUD"
+                "hint", "Xem thư mục docs/study/ để bắt đầu thực hành CRUD"
         );
     }
 

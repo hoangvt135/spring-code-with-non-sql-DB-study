@@ -9,10 +9,10 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.demo.common.AppConfig;
 
 @Service
 public class FileStorageService {
@@ -24,8 +24,8 @@ public class FileStorageService {
 
     private final Path root;
 
-    public FileStorageService(@Value("${app.upload.dir}") String uploadDir) {
-        this.root = Paths.get(uploadDir).toAbsolutePath().normalize();
+    public FileStorageService(AppConfig config) {
+        this.root = Paths.get(config.getString("app.upload.dir")).toAbsolutePath().normalize();
         try {
             Files.createDirectories(root);
         } catch (IOException e) {

@@ -71,14 +71,3 @@ management:
     health:
       # Mặc định chỉ trả {"status":"UP"}. "always" → liệt kê trạng thái từng thành phần: db, mongo, redis...
       show-details: always
-
-app:
-  upload:
-    # Thư mục lưu file người dùng upload.
-    # Đường dẫn TƯƠNG ĐỐI → tính từ thư mục đang chạy app (Docker: /app → /app/uploads).
-    # Muốn để chỗ khác: đặt biến môi trường UPLOAD_DIR, ví dụ /var/lib/demo/uploads
-    dir: ${UPLOAD_DIR:uploads}
-  product:
-    # Ảnh khi sản phẩm chưa có ảnh. Tương đối so với src/main/resources/static/
-    # → nằm trong source, đóng gói luôn vào .jar, deploy đi đâu cũng có
-    default-image: images/product-default.jpg

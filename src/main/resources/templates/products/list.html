@@ -11,32 +11,46 @@
         <h1>Sản phẩm</h1>
         <p><a class="btn" th:href="@{/products/new}">+ Thêm sản phẩm</a></p>
 
+        <!-- Top 5 xem nhiều nhất: thứ tự lấy từ Redis, tên lấy từ MySQL. Chưa ai xem gì → ẩn cả khung -->
+        <div class="top-box" th:unless="${topProducts.isEmpty()}">
+            <b>🔥 Xem nhiều nhất</b>
+            <ol>
+                <li th:each="t : ${topProducts}">
+                    <a th:href="@{/products/{id}(id=${t.id})}" th:text="${t.name}">Tên</a>
+                    <span class="views" th:text="${views.getOrDefault(t.id, 0)} + ' lượt xem'">0 lượt xem</span>
+                </li>
+            </ol>
+        </div>
+
         <table>
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Ảnh</th>
-                    <th>Tên</th>
-                    <th>Giá</th>
-                    <th>Danh mục</th>
-                    <th>Hành động</th>
-                </tr>
+                <tr><th>Ảnh</th><th>Sản phẩm</th><th>Danh mục</th><th class="right">Giá</th><th class="right">Lượt xem</th><th>Hành động</th></tr>
             </thead>
             <tbody>
                 <tr th:each="p : ${products}">
-                    <td th:text="${p.id}">1</td>
-                    <td><img class="thumb" th:src="@{${@productService.imageUrl(p)}}" th:alt="${p.name}" loading="lazy"></td>
-                    <td th:text="${p.name}">Tên</td>
-                    <td th:text="${p.price}">0</td>
+                    <td>
+                        <img class="thumb" th:src="@{${@productService.imageUrl(p)}}" th:alt="${p.name}" loading="lazy">
+                    </td>
+                    <td>
+                        <!-- Tên thành link sang trang chi tiết -->
+                        <b><a th:href="@{/products/{id}(id=${p.id})}" th:text="${p.name}">Tên</a></b>
+                        <span class="muted"
+                              th:unless="${#strings.isEmpty(p.description)}"
+                              th:text="${#strings.abbreviate(p.description, 80)}">Mô tả ngắn</span>
+                    </td>
                     <td th:text="${p.category?.name}">Danh mục</td>
+                    <td class="right"
+                        th:text="${p.price != null} ? (${#numbers.formatDecimal(p.price, 1, 'POINT', 0, 'COMMA')} + ' ₫') : '—'">0 ₫</td>
+                    <!-- views là Map id → lượt xem. Sản phẩm chưa ai xem không có trong Map → 0 -->
+                    <td class="right" th:text="${views.getOrDefault(p.id, 0)}">0</td>
                     <td>
                         <a th:href="@{/products/{id}/edit(id=${p.id})}">Sửa</a> |
                         <a th:href="@{/products/{id}/delete(id=${p.id})}"
-                           onclick="return confirm('Xoá sản phẩm này?')">Xoá</a>
+                           onclick="return confirm('Xoá sản phẩm này? Ảnh của nó cũng bị xoá.')">Xoá</a>
                     </td>
                 </tr>
                 <tr th:if="${products.isEmpty()}">
-                    <td colspan="4">Chưa có sản phẩm nào.</td>
+                    <td colspan="6">Chưa có sản phẩm nào.</td>
                 </tr>
             </tbody>
         </table>

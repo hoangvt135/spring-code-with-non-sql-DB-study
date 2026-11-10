@@ -85,3 +85,52 @@ footer {
 textarea.form_controll {
     resize: vertical;           /* chỉ cho kéo dãn theo chiều dọc */
 }
+
+.top-box {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 4px;
+    padding: 8px 16px;
+    margin-bottom: 16px;
+}
+
+.top-box ol {
+    margin: 8px 0 0;
+}
+
+.views {
+    color: #666;
+    font-size: 13px;
+    margin-left: 6px;
+}
+
+.detail {
+    display: flex;              /* ảnh bên trái, thông tin bên phải */
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.detail h1 {
+    margin-top: 0;
+}
+
+.price {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.description {
+    white-space: pre-line;      /* giữ nguyên các lần xuống dòng khi nhập mô tả */
+}
+
+.recent {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.recent a {
+    width: 80px;
+    font-size: 13px;
+    text-decoration: none;
+}
