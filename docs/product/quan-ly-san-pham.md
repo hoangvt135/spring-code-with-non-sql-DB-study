@@ -1,6 +1,6 @@
 # Quản lý sản phẩm
 
-> **Module:** `product` · **Bài học nguồn:** [bài 02](../study/02-thuc-hanh-crud.md), [bài 05](../study/05-giao-dien-thymeleaf.md), [bài 06](../study/06-quan-he-model.md), [bài 09](../study/09-kien-thuc-controller.md), [bài 10](../study/10-trang-404.md), [bài 11](../study/11-chon-danh-muc-cho-san-pham.md), [bài 15](../study/15-anh-va-mo-ta-san-pham.md), [bài 16](../study/16-luot-xem-top-san-pham-redis.md) · **Cập nhật:** 2026-11-10
+> **Module:** `product` · **Bài học nguồn:** [bài 02](../study/02-thuc-hanh-crud.md), [bài 05](../study/05-giao-dien-thymeleaf.md), [bài 06](../study/06-quan-he-model.md), [bài 09](../study/09-kien-thuc-controller.md), [bài 10](../study/10-trang-404.md), [bài 11](../study/11-chon-danh-muc-cho-san-pham.md), [bài 15](../study/15-anh-va-mo-ta-san-pham.md), [bài 16](../study/16-luot-xem-top-san-pham-redis.md), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** 🔄 Đang làm (bài 15 Bước 10–11 còn thiếu CSS và cấu hình Docker; bài 16 đã có code tới Bước 8, chưa chạy kiểm tra Bước 9) — theo code thật ngày 2026-11-10
 
 ## Chức năng này làm gì
@@ -155,3 +155,4 @@ Entity `Product` (`@Table(name="Product")`, Hibernate tự sinh bảng nhờ `dd
 | [12](../study/12-dang-nhap-spring-security.md) | Mọi đường dẫn bắt đăng nhập; REST dùng HTTP Basic |
 | [15](../study/15-anh-va-mo-ta-san-pham.md) | Thêm `description`, `imagePath`; `save(data, imageFile)` chuyển logic thêm/sửa từ controller vào service; `delete()` xoá cả file ảnh; `imageUrl()`; cột ảnh thumbnail |
 | [16](../study/16-luot-xem-top-san-pham-redis.md) | Cấu hình sang `config/product.properties` + `AppConfig`; `delete()` dọn Redis; thêm trang chi tiết, `topViewed()`, `recentlyViewed()` |
+| [17](../study/17-lombok-slf4j-getter-setter.md) | ⬜ Chưa làm. `Product` dùng `@Getter @Setter` (bỏ 12 getter/setter viết tay, `id` vẫn là `long`); `ProductService` dùng `@Slf4j` thay dòng khai báo `Logger`, xoá `import ...Value` thừa |

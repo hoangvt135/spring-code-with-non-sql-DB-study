@@ -1,6 +1,6 @@
 # Đăng nhập, đăng ký và phân quyền
 
-> **Module:** `com.example.demo.user` + `com.example.demo.config.SecurityConfig` · **Bài học nguồn:** [bài 12](../study/12-dang-nhap-spring-security.md), [bài 13](../study/13-du-lieu-mau-seeder.md#bước-2--tạo-user-admin), [bài 15](../study/15-anh-va-mo-ta-san-pham.md#bước-6--securityconfig-cho-phép-xem-ảnh) · **Cập nhật:** 2026-11-10
+> **Module:** `com.example.demo.user` + `com.example.demo.config.SecurityConfig` · **Bài học nguồn:** [bài 12](../study/12-dang-nhap-spring-security.md), [bài 13](../study/13-du-lieu-mau-seeder.md#bước-2--tạo-user-admin), [bài 15](../study/15-anh-va-mo-ta-san-pham.md#bước-6--securityconfig-cho-phép-xem-ảnh), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** ✅ Hoàn thành (đăng ký, đăng nhập, đăng xuất) — theo code thật ngày 2026-11-10. Phân quyền theo role **chưa áp dụng** (bài tập 3 bài 12 chưa làm).
 
 ## Chức năng này làm gì
@@ -122,3 +122,4 @@ Không có file cấu hình riêng. Toàn bộ luật nằm trong code `Security
 | [12](../study/12-dang-nhap-spring-security.md) | Thêm thư viện security; tạo `User`, `UserRepository`, `UserService`, `AuthController`, `SecurityConfig`, `auth/login.html`, `auth/register.html`; nav "Xin chào" + Đăng xuất |
 | [13](../study/13-du-lieu-mau-seeder.md#bước-2--tạo-user-admin) | `DataSeeder` tạo `admin` / `admin123` role `ADMIN` nếu chưa có |
 | [15](../study/15-anh-va-mo-ta-san-pham.md#bước-6--securityconfig-cho-phép-xem-ảnh) | `permitAll` thêm `/images/**` và `FileStorageService.URL_PREFIX + "**"` (`/uploads/**`) |
+| [17](../study/17-lombok-slf4j-getter-setter.md) | ⬜ Chưa làm. `User` dùng `@Getter @Setter` (bỏ 8 getter/setter viết tay). Không dùng `@ToString`/`@Data` để tránh in `password` ra log |

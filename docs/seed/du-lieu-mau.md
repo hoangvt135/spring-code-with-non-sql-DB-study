@@ -1,6 +1,6 @@
 # Dữ liệu mẫu (DataSeeder) và reset dữ liệu
 
-> **Module:** `seed` (+ script `script/reset-db.sh`) · **Bài học nguồn:** [bài 13](../study/13-du-lieu-mau-seeder.md), [bài 15.5](../study/15.5-reset-du-lieu-va-chay-lai-seeder.md) · **Cập nhật:** 2026-11-10
+> **Module:** `seed` (+ script `script/reset-db.sh`) · **Bài học nguồn:** [bài 13](../study/13-du-lieu-mau-seeder.md), [bài 15.5](../study/15.5-reset-du-lieu-va-chay-lai-seeder.md), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** 🔄 Đang làm (bài 15.5 Bước 1: `seedSampleData()` chưa truyền mô tả) — theo code thật ngày 2026-11-10
 
 ## Chức năng này làm gì
@@ -99,3 +99,4 @@ Script xoá: database MySQL `DB_NAME` (mặc định `demo_db`), database MongoD
 |---|---|
 | [13](../study/13-du-lieu-mau-seeder.md) | Tạo `DataSeeder`: admin + 3 danh mục + 5 sản phẩm, idempotent |
 | [15.5](../study/15.5-reset-du-lieu-va-chay-lai-seeder.md) | Thêm overload `createProduct(..., description)` (chưa dùng trong `seedSampleData()`); thêm script reset (đặt ở `script/`) |
+| [17](../study/17-lombok-slf4j-getter-setter.md) | ⬜ Chưa làm. `DataSeeder` dùng `@Slf4j` thay dòng khai báo `Logger` |

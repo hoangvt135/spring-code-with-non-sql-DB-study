@@ -14,7 +14,7 @@ Quy ước (xem thêm mục "Kế hoạch đang chờ" trong [CLAUDE.md](../CLAU
 
 ```
 13 Seeder ✅ → 14 Mongo + Redis ✅ → 15 Ảnh & mô tả (Bước 10 đang dở) → 15.5 Reset & seeder (còn seed mô tả)
-   → 16 Redis: lượt xem (đã viết, code xong Bước 1–8, còn Bước 9) → 17 Log gọn bằng Lombok @Slf4j (CHƯA VIẾT)
+   → 16 Redis: lượt xem ✅ → 17 Lombok @Slf4j + @Getter/@Setter (ĐÃ VIẾT, chờ người học làm)
    → 18 MongoDB: đánh giá (CHƯA VIẾT) → 19 Redis cache (CHƯA VIẾT)
 ```
 
@@ -26,7 +26,8 @@ Tài liệu chi tiết từng chức năng theo code thật nằm ở `docs/<mod
 
 - Bài 15: **còn dở** Bước 10 (`app.css` chưa có `.preview`, `.muted` dù `form.html`, `list.html`, `detail.html` đang dùng) và Bước 11 (`.dockerignore` chưa có `uploads/`, `docker-compose.yml` chưa có volume `uploads_data`).
 - Bài 15.5: đã có script ở **`script/reset-db.sh`** (bài ghi `scripts/`). `seedSampleData()` vẫn **chưa truyền mô tả** (5 sản phẩm mẫu có mô tả rỗng).
-- Bài 16: code đã có đủ **Bước 1–8** (`ProductStatsService` có đủ 5 hàm Redis, `ProductService` đã dùng `AppConfig` + `topViewed`/`recentlyViewed`, `delete()` dọn Redis, có `products/detail.html`, CSS Bước 8). **Bước 9 (chạy & kiểm tra)** chưa có bằng chứng đã làm. Sót nhỏ: `ProductService` còn `import ...annotation.Value` thừa, field `productRepository` thiếu `final`.
+- Bài 16: **người học báo đã xong** (2026-11-10). Code có đủ **Bước 1–8** (`ProductStatsService` có đủ 5 hàm Redis, `ProductService` đã dùng `AppConfig` + `topViewed`/`recentlyViewed`, `delete()` dọn Redis, có `products/detail.html`, CSS Bước 8). Sót nhỏ: `ProductService` còn `import ...annotation.Value` thừa (bài 17 Bước 2 nhắc xoá), field `productRepository` thiếu `final`.
+- Bài 17 (viết ngày 2026-11-10, phạm vi người học chọn: `@Slf4j` + `@Getter`/`@Setter`, có mục "dùng log cho đúng"): **chưa làm**. Doc module đã ghi dòng lịch sử ⬜ cho bài 17; làm xong thì đổi thành đã làm.
 - `docker-compose.yml` (chế độ thường) chưa có `mongo`, `redis` (bài 14 Bước 2), nên lượt xem bài 16 chỉ chạy ở chế độ dev.
 
 ---
@@ -39,37 +40,22 @@ Tài liệu chi tiết từng chức năng theo code thật nằm ở `docs/<mod
 - **Hiện trạng:** bài [15.5](study/15.5-reset-du-lieu-va-chay-lai-seeder.md) chỉ thêm `description` cho sản phẩm và viết script reset. Seeder vẫn chỉ tạo **một** user `admin`. Bài 13 có bài tập 2 (seed `user` / `user123` bằng hàm `createUser(username, password, role)`), nhưng người học chưa làm.
 - **Việc cần làm:** hỏi người học muốn **bổ sung một bước vào bài 15.5** (khuyên chọn cách này) hay tự làm bài tập 2 của bài 13. Phạm vi gợi ý: hàm `createUser()`, mỗi user kiểm tra `existsByUsername` riêng (idempotent), seed 2–3 user role `USER` (ví dụ `user1` / `user123`, `user2` / `user123`). Sau đó bài 16 Bước 9 có thể đổi ví dụ để đăng nhập 2 user và so sánh "Bạn vừa xem".
 
-### 2. Viết bài 17 — Khai báo log gọn hơn bằng Lombok `@Slf4j`
+### 2. Viết bài 18 — Đánh giá sản phẩm bằng MongoDB
 
-- **Lên kế hoạch:** 2026-11-04. **Viết khi** người học làm xong bài 16, trước bài MongoDB.
-- **Câu hỏi gốc:** class nào có log cũng phải tự gõ `private static final Logger log = LoggerFactory.getLogger(XXX.class);`. Có tạo được một cái "common" rồi import vào là xong không? Câu trả lời ngắn đã ghi trong [common_knowledge.md](common_knowledge.md#mỗi-class-đều-phải-tự-khai-báo-logger-có-tạo-một-logger-common-rồi-import-vào-được-không).
-- **Phạm vi đề xuất:**
-  - *Tư vấn trước khi code:* vì sao không dùng chung một logger được. Logger cần **tên class** để log in ra `c.e.demo.product.ProductService`, và `logging.level.com.example.demo: DEBUG` cũng dựa vào tên đó. So sánh 5 cách: (a) một logger `static` chung trong `common/`: sai tên class, không nên dùng; (b) interface `Loggable` có hàm `default log()` dùng `getClass()`: class `@Configuration` bị Spring bọc proxy nên tên in ra thành `WebConfig$$SpringCGLIB$$0`, và mỗi lần gọi lại phải tra logger; (c) `LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())`: copy-paste giữa các file không bị sai tên class, nhưng vẫn là 1 dòng; (d) **Lombok `@Slf4j`** (khuyên dùng); (e) snippet của VSCode: gõ tắt rồi tự bung ra dòng khai báo.
-  - *Thực hành:* thêm Lombok vào `build.gradle` (`compileOnly` + `annotationProcessor`, phiên bản do Spring Boot quản lý). Thay `@Slf4j` vào các file đang khai báo logger tay. Ngày 2026-11-04 có 5 file: `nosql/NoSqlConnectionCheck`, `seed/DataSeeder`, `product/ProductService`, `storage/FileStorageService`, `stats/ProductStatsService`, cộng thêm `common/ModuleConfigLoader` của bài 16. Riêng class này dùng `DeferredLogFactory`, **không** thay bằng `@Slf4j` được: phải giải thích vì sao.
-  - *Chạy & kiểm tra:* log in ra giống hệt trước (đúng tên class), build trong Docker (`docker-compose.dev.yml`) chạy được, VSCode không gạch đỏ `log` (extension Java của Red Hat đã có sẵn hỗ trợ Lombok).
-  - *Lỗi thường gặp:* thiếu dòng `annotationProcessor` thì báo `cannot find symbol: variable log`. Build chạy được mà VSCode vẫn gạch đỏ thì dùng "Java: Clean Java Language Server Workspace". Vẫn còn dòng khai báo cũ thì báo trùng biến `log`.
-  - Có thể kèm một phần ngắn "dùng log cho đúng": khi nào dùng `debug` / `info` / `warn` / `error`, và `log.warn("...", e)` để in cả stack trace. Phần `{}` đã có trong common_knowledge, chỉ cần link tới.
-- **Phải hỏi người học trước khi viết:**
-  1. Chỉ dùng **`@Slf4j`**, hay dùng thêm `@Getter` / `@Setter` của Lombok? [CLAUDE.md](../CLAUDE.md) đang ghi getter/setter viết tay là **cố ý**. Nếu dùng thêm thì đây là refactor lớn (entity, `XxxProperties`...), phải sửa cả CLAUDE.md.
-  2. Có gộp phần "dùng log cho đúng" vào bài này không?
-- **Khi viết xong:** sửa dòng "Đừng tự ý refactor sang ... Lombok" trong CLAUDE.md, thêm ngoại lệ cho `@Slf4j`. Kiểm tra lại link "Bài sau" ở cuối bài 16. Khuôn bài giống bài 15/16. Chạy thử trên bản sao project **trước khi** viết bài.
-
-### 3. Viết bài 18 — Đánh giá sản phẩm bằng MongoDB
-
-- **Lên kế hoạch:** 2026-10-28. **Viết khi** người học làm xong bài 17, để bám theo code thật của họ. (Lúc lên kế hoạch đây là bài 17. Ngày 2026-11-04 dời thành 18.)
+- **Lên kế hoạch:** 2026-10-28. **Viết khi** người học làm xong [bài 17](study/17-lombok-slf4j-getter-setter.md), để bám theo code thật của họ. Entity `Review` (nếu là class Java) dùng `@Getter`/`@Setter` theo quy tắc Lombok trong CLAUDE.md. (Lúc lên kế hoạch đây là bài 17. Ngày 2026-11-04 dời thành 18.)
 - **Phạm vi đã chốt:** mỗi sản phẩm có danh sách đánh giá (số sao 1–5, nội dung, người viết lấy từ `Principal`, thời gian) và điểm sao trung bình. Học: `@Document`, `MongoRepository` (phải `extends MongoRepository`, xem bài 14), query method kiểu `findByProductIdOrderByCreatedAtDesc`, **document lồng nhau** (danh sách trả lời nằm bên trong đánh giá), **aggregation** để tính điểm trung bình.
 - **Những điểm phải dạy:** liên kết 2 DB bằng `productId` (không có JOIN, không có khoá ngoại). Xoá sản phẩm ở MySQL thì **tự xoá** đánh giá ở Mongo, giống cách bài 16 dọn Redis. Script reset của bài 15.5 đã xoá Mongo. Seeder có thể seed vài đánh giá mẫu (nối với mục 1).
 - **Nơi hiển thị:** trang chi tiết `products/detail.html` của bài 16.
 - **Khuôn bài:** giống bài 15/16: Tư vấn → Ý tưởng → Các bước → Chạy & kiểm tra (có `mongosh`) → Lỗi thường gặp → Bài tập. Chạy thử toàn bộ code trên một bản sao project với DB tạm riêng **trước khi** viết bài.
 
-### 4. Viết bài 19 — Cache danh sách sản phẩm bằng Redis
+### 3. Viết bài 19 — Cache danh sách sản phẩm bằng Redis
 
 - **Lên kế hoạch:** 2026-10-28. **Viết sau** bài 18. (Lúc lên kế hoạch đây là bài 18. Ngày 2026-11-04 dời thành 19.)
 - **Phạm vi:** `@EnableCaching`, `@Cacheable` cho `findAll()` / `findById()`, `@CacheEvict` khi thêm/sửa/xoá. Dạy khái niệm cache và **khi nào phải xoá cache**.
 - **Rủi ro cần xử lý trong bài:** serialize `Product` (có `Category` lazy, và `Category.products` có `@JsonIgnore`) sang Redis, cấu hình serializer JSON thay cho serializer mặc định của Java, đặt TTL. Bài 14 đã hứa "bài sau sẽ dùng `@Cacheable`".
 
 
-### 5. Sửa các sai sót phát hiện trong bài cũ (chờ người học đồng ý)
+### 4. Sửa các sai sót phát hiện trong bài cũ (chờ người học đồng ý)
 
 - **Lên kế hoạch:** 2026-11-09. Phát hiện trong lúc bổ sung phần "📖 Tra cứu: các hàm có sẵn" cho bài 02 → 15 (việc bổ sung đó **đã xong**; quy ước cho bài mới nằm trong CLAUDE.md). Chưa sửa gì, cần hỏi người học có muốn sửa không.
 - **Sai sót trong tài liệu:**

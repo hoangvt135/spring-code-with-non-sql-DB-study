@@ -1,6 +1,6 @@
 # Kiểm tra kết nối MongoDB và Redis (NoSqlConnectionCheck)
 
-> **Module:** `nosql` · **Bài học nguồn:** [bài 14](../study/14-moi-truong-mongodb-redis.md), [bài 16 Bước 1](../study/16-luot-xem-top-san-pham-redis.md#bước-1--applicationyml-timeout-cho-redis) (timeout Redis) · **Cập nhật:** 2026-11-10
+> **Module:** `nosql` · **Bài học nguồn:** [bài 14](../study/14-moi-truong-mongodb-redis.md), [bài 16 Bước 1](../study/16-luot-xem-top-san-pham-redis.md#bước-1--applicationyml-timeout-cho-redis) (timeout Redis), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** ✅ Hoàn thành ở chế độ dev · 🔄 Bài 14 Bước 2 chưa làm (`docker-compose.yml` chưa có Mongo/Redis) — theo code thật ngày 2026-11-10
 
 ## Chức năng này làm gì
@@ -101,3 +101,4 @@ Chạy app ngay trên máy (không Docker): `DB_PORT=3313 MONGO_PORT=27018 REDIS
 |---|---|
 | [14](../study/14-moi-truong-mongodb-redis.md) | Thêm `mongo`, `redis` vào `docker-compose.dev.yml` (chưa thêm vào `docker-compose.yml`); 2 starter; cấu hình kết nối + health; tạo `NoSqlConnectionCheck` |
 | [16 Bước 1](../study/16-luot-xem-top-san-pham-redis.md#bước-1--applicationyml-timeout-cho-redis) | Thêm `timeout: 2s`, `connect-timeout: 2s` cho Redis |
+| [17](../study/17-lombok-slf4j-getter-setter.md) | ⬜ Chưa làm. `NoSqlConnectionCheck` dùng `@Slf4j` thay dòng khai báo `Logger` |

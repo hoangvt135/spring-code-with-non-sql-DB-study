@@ -1166,6 +1166,6 @@ Xong thì trả về `30d` / `5` / `5`.
 7. **So sánh với MySQL**: thêm thử cột `views` vào `Product` và `UPDATE product SET views = views + 1` mỗi lần xem (xem phần Tư vấn). Bật `show-sql` (đã bật sẵn), mở trang chi tiết rồi đếm xem mỗi lượt xem tạo ra bao nhiêu câu SQL. Làm xong nhớ xoá cột đi (`ddl-auto: update` không tự xoá cột, xem bài 15 phần `@Column`).
 8. **Danh sách đuôi ảnh vào cấu hình**: `FileStorageService` vẫn còn viết cứng `Set.of("jpg", "jpeg", "png", "gif", "webp")`. Chuyển nó vào `config/upload.properties` thành `app.upload.allowed-extensions=jpg,jpeg,png,gif,webp`. Thêm vào `AppConfig` một hàm dùng chung `public Set<String> getStringSet(String key)`. Gợi ý: `env.getRequiredProperty(key, String[].class)` tự tách chuỗi theo dấu phẩy, rồi `Set.of(...)` mảng đó. Thử bỏ `gif` khỏi `config/upload.properties` rồi upload một ảnh `.gif`: phải bị từ chối. Câu hỏi: vì sao `URL_PREFIX = "/uploads/"` thì **không nên** đưa ra cấu hình? (Gợi ý: xem những class nào khác đang dùng nó.)
 
-➡️ Bài sau: **17 — Khai báo log gọn hơn bằng Lombok `@Slf4j`**. Sau đó là **18 — Đánh giá sản phẩm bằng MongoDB** (`MongoRepository`, document lồng nhau, tính điểm trung bình).
+➡️ Bài sau: [**17 — Viết code gọn hơn bằng Lombok: `@Slf4j`, `@Getter`, `@Setter`**](17-lombok-slf4j-getter-setter.md). Sau đó là **18 — Đánh giá sản phẩm bằng MongoDB** (`MongoRepository`, document lồng nhau, tính điểm trung bình).
 
 ➡️ Quay lại tổng quan: [../README.md](../../README.md)

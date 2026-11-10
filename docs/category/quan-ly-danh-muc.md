@@ -1,6 +1,6 @@
 # Quản lý danh mục
 
-> **Module:** `com.example.demo.category` · **Bài học nguồn:** [bài 06](../study/06-quan-he-model.md), [bài 08](../study/08-giao-dien-category.md), [bài 10](../study/10-trang-404.md), [bài 11](../study/11-chon-danh-muc-cho-san-pham.md) · **Cập nhật:** 2026-11-10
+> **Module:** `com.example.demo.category` · **Bài học nguồn:** [bài 06](../study/06-quan-he-model.md), [bài 08](../study/08-giao-dien-category.md), [bài 10](../study/10-trang-404.md), [bài 11](../study/11-chon-danh-muc-cho-san-pham.md), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** ✅ Hoàn thành (CRUD web + REST) — theo code thật ngày 2026-11-10. Bài tập "xoá an toàn" của bài 08 chưa làm.
 
 ## Chức năng này làm gì
@@ -112,6 +112,7 @@ Không có.
 | [10](../study/10-trang-404.md#bước-3--service-ném-notfoundexception) | `findById` ném `NotFoundException` → 404 thay vì 500 |
 | [11](../study/11-chon-danh-muc-cho-san-pham.md#bước-4--nhận-categoryid-khi-lưu) | `ProductViewController` dùng `CategoryService` cho dropdown và gán danh mục khi lưu sản phẩm |
 | [13](../study/13-du-lieu-mau-seeder.md) | Seeder tạo 3 danh mục mẫu |
+| [17](../study/17-lombok-slf4j-getter-setter.md) | ⬜ Chưa làm. `Category` dùng `@Getter @Setter` (bỏ 6 getter/setter viết tay). `@JsonIgnore` vẫn đặt trên trường `products`. Không dùng `@Data` vì quan hệ 2 chiều với `Product` gây `StackOverflowError` |
 
 Các điểm code khác bài học:
 - ⚠️ Khác bài học: bài 06 Bước 5 thêm `ProductRepository.findByCategoryId` và API `GET /api/products/by-category/{categoryId}`, nhưng code **không có** hai thứ này.

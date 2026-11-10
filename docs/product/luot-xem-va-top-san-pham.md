@@ -1,6 +1,6 @@
 # Lượt xem sản phẩm, Top xem nhiều và "Bạn vừa xem"
 
-> **Module:** `product` (code ở package `stats`) · **Bài học nguồn:** [bài 16](../study/16-luot-xem-top-san-pham-redis.md) · **Cập nhật:** 2026-11-10
+> **Module:** `product` (code ở package `stats`) · **Bài học nguồn:** [bài 16](../study/16-luot-xem-top-san-pham-redis.md), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** 🔄 Đang làm (bài 16 Bước 9 — chạy & kiểm tra) — theo code thật ngày 2026-11-10: code của Bước 1–8 đã có đủ, Bước 9 chưa xác nhận đã chạy thử
 
 ## Chức năng này làm gì
@@ -143,3 +143,4 @@ File `src/main/resources/config/stats.properties`, đọc **một lần** trong 
 |---|---|
 | [14](../study/14-moi-truong-mongodb-redis.md) | Thêm service `redis` vào `docker-compose.dev.yml`, `spring-boot-starter-data-redis`, cấu hình `spring.data.redis` |
 | [16](../study/16-luot-xem-top-san-pham-redis.md) | Tạo chức năng: timeout Redis (Bước 1), `config/stats.properties` + `AppConfig` (Bước 2), `ProductStatsService` (Bước 3), `topViewed` / `recentlyViewed` / dọn Redis khi xoá (Bước 4), `detail()` (Bước 5), `detail.html` (Bước 6), khung Top + cột Lượt xem (Bước 7), CSS (Bước 8) |
+| [17](../study/17-lombok-slf4j-getter-setter.md) | ⬜ Chưa làm. `ProductStatsService` dùng `@Slf4j` thay dòng khai báo `Logger`. Không đổi logic |

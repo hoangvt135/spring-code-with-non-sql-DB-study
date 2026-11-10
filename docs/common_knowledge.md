@@ -835,7 +835,7 @@ Comment tiếng Việt (dòng bắt đầu bằng `#`) thì không sao, vì comm
 
 ## Mỗi class đều phải tự khai báo logger. Có tạo một logger "common" rồi import vào được không?
 
-> Hỏi ở: [Bài 16](study/16-luot-xem-top-san-pham-redis.md), khi thấy file nào cũng có dòng `private static final Logger log = LoggerFactory.getLogger(NoSqlConnectionCheck.class);`. Phần thực hành để dành cho **bài 17** (xem [ke-hoach.md](ke-hoach.md)).
+> Hỏi ở: [Bài 16](study/16-luot-xem-top-san-pham-redis.md), khi thấy file nào cũng có dòng `private static final Logger log = LoggerFactory.getLogger(NoSqlConnectionCheck.class);`. Phần thực hành ở [**bài 17**](study/17-lombok-slf4j-getter-setter.md).
 
 ### Vì sao mỗi class lại có logger riêng?
 
@@ -883,7 +883,7 @@ public class ProductService {
 }
 ```
 
-Để dùng được, phải thêm Lombok vào `build.gradle` (2 dòng `compileOnly` và `annotationProcessor`). Bài 17 sẽ hướng dẫn chi tiết.
+Để dùng được, phải thêm Lombok vào `build.gradle` (2 dòng `compileOnly` và `annotationProcessor`). Chi tiết ở [bài 17](study/17-lombok-slf4j-getter-setter.md#bước-1--buildgradle-thêm-lombok).
 
 > Hiện project không có lỗi copy-paste nào: kiểm tra ngày 2026-11-04 thì cả 5 file khai báo logger đều ghi đúng tên class của chính nó.
 

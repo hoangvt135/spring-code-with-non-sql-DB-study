@@ -1,6 +1,6 @@
 # Lưu file upload (FileStorageService)
 
-> **Module:** `storage` (+ `config/WebConfig`) · **Bài học nguồn:** [bài 15](../study/15-anh-va-mo-ta-san-pham.md), [bài 16 Bước 2](../study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) · **Cập nhật:** 2026-11-10
+> **Module:** `storage` (+ `config/WebConfig`) · **Bài học nguồn:** [bài 15](../study/15-anh-va-mo-ta-san-pham.md), [bài 16 Bước 2](../study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** ✅ Hoàn thành phần Java · 🔄 Bài 15 Bước 11 chưa xong (chế độ thường chưa có volume cho ảnh) — theo code thật ngày 2026-11-10
 
 ## Chức năng này làm gì
@@ -113,3 +113,4 @@ File > 5MB (hoặc cả form > 6MB) → Tomcat từ chối trước khi tới co
 |---|---|
 | [15](../study/15-anh-va-mo-ta-san-pham.md) | Tạo `FileStorageService`, `WebConfig`; mở quyền `/uploads/**`; giới hạn multipart 5MB/6MB; `uploads/` vào `.gitignore` (Bước 11 phần Docker chưa làm) |
 | [16](../study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) | Bỏ `@Value`, đọc `app.upload.dir` qua `AppConfig` từ `config/upload.properties` |
+| [17](../study/17-lombok-slf4j-getter-setter.md) | ⬜ Chưa làm. `FileStorageService` dùng `@Slf4j` thay dòng khai báo `Logger`. Bài tập 1: thay `getRoot()` viết tay bằng `@Getter` trên trường `root` |
