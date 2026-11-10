@@ -370,7 +370,7 @@ Bài sau sẽ dùng cách tiện hơn: `MongoRepository` (giống hệt `JpaRepo
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Các hàm dưới đây **không phải do mình viết**. Chúng nằm trong thư viện **Spring Data Redis** và **Spring Data MongoDB** (có được nhờ 2 starter ở Bước 3), thư viện **BSON** đi kèm driver MongoDB (class `Document`), hoặc trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Các hàm dưới đây **không phải do mình viết**. Chúng nằm trong thư viện **Spring Data Redis** và **Spring Data MongoDB** (có được nhờ 2 starter ở Bước 3), thư viện **BSON** đi kèm driver MongoDB (class `Document`), hoặc trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../kien-thuc/doc-bai-hoc-va-tra-cuu.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 #### Đọc một dòng gọi nối nhau: `redisTemplate.opsForValue().set(...)`
 

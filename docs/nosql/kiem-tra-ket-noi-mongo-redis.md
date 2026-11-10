@@ -1,6 +1,6 @@
 # Kiểm tra kết nối MongoDB và Redis (NoSqlConnectionCheck)
 
-> **Module:** `nosql` · **Bài học nguồn:** [bài 14](../study/14-moi-truong-mongodb-redis.md), [bài 16 Bước 1](../study/16-luot-xem-top-san-pham-redis.md#bước-1--applicationyml-timeout-cho-redis) (timeout Redis), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
+> **Module:** `nosql` · **Bài học nguồn:** [bài 14](../study/14-moi-truong-mongodb-redis.md), [bài 16 Bước 1](../study/16-luot-xem-top-san-pham-redis.md#bước-1--applicationyml-timeout-cho-redis) (timeout Redis), [bài 16.5](../study/16.5-nang-cap-spring-boot-4.md), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** ✅ Hoàn thành ở chế độ dev · 🔄 Bài 14 Bước 2 chưa làm (`docker-compose.yml` chưa có Mongo/Redis) — theo code thật ngày 2026-11-10
 
 ## Chức năng này làm gì
@@ -93,7 +93,7 @@ Chạy app ngay trên máy (không Docker): `DB_PORT=3313 MONGO_PORT=27018 REDIS
 
 - [Lượt xem và top sản phẩm](../product/luot-xem-va-top-san-pham.md): tính năng đầu tiên dùng Redis thật (`stats/ProductStatsService`).
 - [Dữ liệu mẫu & reset](../seed/du-lieu-mau.md): script reset `dropDatabase()` Mongo và `FLUSHDB` Redis.
-- Sổ tay: [`management.endpoints` và `management.endpoint`](../common_knowledge.md#managementendpoints-và-managementendpoint-cókhông-có-chữ-s-khác-nhau-thế-nào).
+- Sổ tay: [`management.endpoints` và `management.endpoint`](../cong-nghe/spring-boot.md#managementendpoints-và-managementendpoint-cókhông-có-chữ-s-khác-nhau-thế-nào).
 
 ## Lịch sử thay đổi
 
@@ -101,4 +101,5 @@ Chạy app ngay trên máy (không Docker): `DB_PORT=3313 MONGO_PORT=27018 REDIS
 |---|---|
 | [14](../study/14-moi-truong-mongodb-redis.md) | Thêm `mongo`, `redis` vào `docker-compose.dev.yml` (chưa thêm vào `docker-compose.yml`); 2 starter; cấu hình kết nối + health; tạo `NoSqlConnectionCheck` |
 | [16 Bước 1](../study/16-luot-xem-top-san-pham-redis.md#bước-1--applicationyml-timeout-cho-redis) | Thêm `timeout: 2s`, `connect-timeout: 2s` cho Redis |
+| [16.5](../study/16.5-nang-cap-spring-boot-4.md) | ⬜ Chưa làm. Spring Boot 4: `spring.data.mongodb.uri` → `spring.mongodb.uri` (tên cũ bị bỏ qua → kết nối nhầm `localhost:27017`). Redis giữ `spring.data.redis.*` |
 | [17](../study/17-lombok-slf4j-getter-setter.md) | ⬜ Chưa làm. `NoSqlConnectionCheck` dùng `@Slf4j` thay dòng khai báo `Logger` |

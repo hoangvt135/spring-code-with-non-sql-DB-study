@@ -14,7 +14,8 @@ Quy ước (xem thêm mục "Kế hoạch đang chờ" trong [CLAUDE.md](../CLAU
 
 ```
 13 Seeder ✅ → 14 Mongo + Redis ✅ → 15 Ảnh & mô tả (Bước 10 đang dở) → 15.5 Reset & seeder (còn seed mô tả)
-   → 16 Redis: lượt xem ✅ → 17 Lombok @Slf4j + @Getter/@Setter (ĐÃ VIẾT, chờ người học làm)
+   → 16 Redis: lượt xem ✅ → 16.5 Nâng cấp Spring Boot 4.1.2 (ĐÃ VIẾT, chờ người học làm)
+   → 17 Lombok @Slf4j + @Getter/@Setter (ĐÃ VIẾT, làm sau 16.5)
    → 18 MongoDB: đánh giá (CHƯA VIẾT) → 19 Redis cache (CHƯA VIẾT)
 ```
 
@@ -27,6 +28,7 @@ Tài liệu chi tiết từng chức năng theo code thật nằm ở `docs/<mod
 - Bài 15: **còn dở** Bước 10 (`app.css` chưa có `.preview`, `.muted` dù `form.html`, `list.html`, `detail.html` đang dùng) và Bước 11 (`.dockerignore` chưa có `uploads/`, `docker-compose.yml` chưa có volume `uploads_data`).
 - Bài 15.5: đã có script ở **`script/reset-db.sh`** (bài ghi `scripts/`). `seedSampleData()` vẫn **chưa truyền mô tả** (5 sản phẩm mẫu có mô tả rỗng).
 - Bài 16: **người học báo đã xong** (2026-11-10). Code có đủ **Bước 1–8** (`ProductStatsService` có đủ 5 hàm Redis, `ProductService` đã dùng `AppConfig` + `topViewed`/`recentlyViewed`, `delete()` dọn Redis, có `products/detail.html`, CSS Bước 8). Sót nhỏ: `ProductService` còn `import ...annotation.Value` thừa (bài 17 Bước 2 nhắc xoá), field `productRepository` thiếu `final`.
+- Bài 16.5 (viết ngày 2026-11-10, theo yêu cầu người học): nâng Spring Boot 3.4.1 → 3.5.16 → **4.1.2**, Gradle 8.11 → **9.8.2**, sửa template gọi bean trong `th:src`, `EnvironmentPostProcessor` đổi package, 2 property đổi tên. **Chưa làm.** Đã chạy thử đủ trên bản sao. Người học làm xong thì: cập nhật dòng "Phiên bản" trong `docs/cong-nghe/*.md` và CLAUDE.md, đổi dòng ⬜ bài 16.5 trong doc module thành đã làm.
 - Bài 17 (viết ngày 2026-11-10, phạm vi người học chọn: `@Slf4j` + `@Getter`/`@Setter`, có mục "dùng log cho đúng"): **chưa làm**. Doc module đã ghi dòng lịch sử ⬜ cho bài 17; làm xong thì đổi thành đã làm.
 - `docker-compose.yml` (chế độ thường) chưa có `mongo`, `redis` (bài 14 Bước 2), nên lượt xem bài 16 chỉ chạy ở chế độ dev.
 
@@ -70,6 +72,12 @@ Tài liệu chi tiết từng chức năng theo code thật nằm ở `docs/<mod
   9. Bài 15.5 và comment trong `script/reset-db.sh` ghi `scripts/`, trong khi thư mục thật là `script/`.
   10. Bài 14: database Mongo trong bài là `demo_mongo`, nhưng `docker-compose.dev.yml` mặc định `MONGO_DB=demo_db`. Vì vậy lệnh `mongosh ... demo_mongo` trong bài trỏ vào database trống.
   11. Bài 10 ghi message `"Không tìm thấy danh mục id=..."`, code ghi `"không tìm thấy category id ..."`. Bài 12 khai báo `User.role` là `nullable = false`, code để `nullable = true`.
+  12. *(Phát hiện ngày 2026-11-10 khi viết `docs/cong-nghe/`)* Bài 09 mục 3 ghi `@RequestParam` "chưa dùng trong project", nhưng `ProductViewController.save()` đã dùng từ bài 11. Bài 15 (Bước 1 và bảng lỗi) còn ghi ảnh mặc định `.svg`, code dùng `.jpg`.
+  13. Bài 05 và bài 07 (bảng lỗi) ghi "thiếu `xmlns:th` / `xmlns:layout` thì thuộc tính bị in nguyên văn". Theo tài liệu Thymeleaf, khai báo `xmlns` chỉ để IDE không báo lỗi, không ảnh hưởng xử lý. Bài 07 dùng `~{layout}`, code thật dùng `~{fragments/layout}`.
+  14. Bài 12 Bước 2 ghi bảng tên `users` vì "`user` trùng từ khoá MySQL". Trong MySQL 8.4, `USER` là từ khoá nhưng **không** phải từ dành riêng (`CREATE TABLE user` vẫn chạy). Lý do đúng hơn: `user` là từ dành riêng ở PostgreSQL.
+  15. Chưa bài nào nhắc: với Hibernate 6.6, `POST /api/products` gửi kèm một `"id"` không tồn tại sẽ ném `OptimisticLockException` (lỗi 500).
+  16. Comment trong `Dockerfile` ghi "copy build.gradle trước để tận dụng cache", nhưng giữa 2 lệnh `COPY` không có bước `RUN` tải thư viện, nên cache không có tác dụng. Image cũng không copy `gradle.properties`.
+  17. *(Đã đưa vào [bài 16.5](study/16.5-nang-cap-spring-boot-4.md) Bước 3, không còn chờ.)* 3 template sản phẩm gọi bean trong `th:src`, bị Thymeleaf 3.1.4+ cấm.
 - **Khác biệt trong code của người học (chỉ để biết, không phải lỗi của bài):** `nosql/NoSqlConnectionCheck` gọi `opsForValue().set(key, value)` không có `Duration`, nên key `demo:last-startup` không bao giờ hết hạn. `fragments/layout.html` khác bài 12 Bước 9: không có khối `!isAuthenticated()` chứa link Đăng nhập / Đăng ký, nên nav ở `/login`, `/register` trống. `app.css` thiếu CSS của bài 12 (`.nav-user`, `.alert`...). Xoá danh mục còn sản phẩm thì ra 500 (khoá ngoại). `SecurityConfig` chưa có luật `hasRole` nào.
 - **Còn hở:** các hàm chỉ xuất hiện trong phần **Bài tập** (ví dụ `#numbers.formatDecimal` và `RedirectAttributes.addFlashAttribute` ở bài 05) chưa có bảng tra cứu. Hỏi người học có cần thêm không.
 

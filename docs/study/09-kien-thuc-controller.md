@@ -187,7 +187,7 @@ Form thêm mới cũng cần bỏ vào một object rỗng (`new Category()`). L
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../kien-thuc/doc-bai-hoc-va-tra-cuu.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 Bài này chủ yếu nói về annotation và kiểu `return`, nên gần như không gọi hàm có sẵn nào. Hàm có sẵn duy nhất là `model.addAttribute(...)` của `Model` (Spring), dùng ở mục này và ở ví dụ `editForm` của mục 3. Còn `categoryService.findAll()`, `findById`, `creatCategory`, `updateCategory`, `delete` là hàm mình tự viết trong `CategoryService`.
 

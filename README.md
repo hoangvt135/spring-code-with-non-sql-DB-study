@@ -19,9 +19,11 @@ java_code/
 ├── docker-compose.yml        # Chạy app + MySQL cùng lúc
 ├── .env.example              # Mẫu biến môi trường (copy thành .env)
 ├── docs/
-│   ├── study/                # 👉 Bài học, làm theo thứ tự 01 → 16
+│   ├── study/                # 👉 Bài học, làm theo thứ tự 01 → 17
 │   ├── <module>/             # Tài liệu từng module (product/, category/, user/...)
-│   ├── common_knowledge.md   # Sổ tay kiến thức chung
+│   ├── cong-nghe/            # Giới thiệu chi tiết từng công nghệ (Spring, Redis, MongoDB...)
+│   ├── kien-thuc/            # Kiến thức chung (Java...)
+│   ├── common_knowledge.md   # Mục lục kiến thức
 │   └── ke-hoach.md           # Kế hoạch đang chờ
 └── src/main/
     ├── java/com/example/demo/

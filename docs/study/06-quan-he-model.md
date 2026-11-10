@@ -89,7 +89,7 @@ public class Category {
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Hàm dưới đây **không phải do mình viết**, mà có sẵn trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Hàm dưới đây **không phải do mình viết**, mà có sẵn trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../kien-thuc/doc-bai-hoc-va-tra-cuu.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 | Hàm | Của ai | Làm gì | Trả về |
 |---|---|---|---|

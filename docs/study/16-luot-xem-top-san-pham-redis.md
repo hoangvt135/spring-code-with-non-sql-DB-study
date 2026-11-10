@@ -333,7 +333,7 @@ Mấy điểm cần để ý:
 - **`EnvironmentPostProcessor`** là "móc" mà Spring Boot gọi **rất sớm**: sau khi đọc xong `application.yml`, nhưng trước khi tạo bất kỳ bean nào (service, controller...). Nhờ vậy, khi `ProductStatsService` được tạo thì các key trong `config/` đã có sẵn.
 - **Vì sao phải đăng ký trong `spring.factories`, không dùng `@Component`?** `@Component` chỉ có tác dụng khi Spring **quét bean**, mà lúc đó thì đã quá muộn. `spring.factories` là danh sách Spring Boot đọc ngay từ đầu để biết có những "móc" nào cần gọi. Quên file này thì `ModuleConfigLoader` không bao giờ chạy.
 - **`classpath*:config/*.properties`**: tìm mọi file đuôi `.properties` trong thư mục `config/` của classpath. `src/main/resources/` sẽ được copy vào classpath, nên thư mục `src/main/resources/config/` nằm trong phạm vi tìm. Chạy được cả ở chế độ dev lẫn khi đóng gói thành `.jar`.
-- **Đọc theo UTF-8.** Nếu nạp `.properties` theo cách mặc định của Spring Boot thì giá trị tiếng Việt bị lỗi font (`Xin chào` → `Xin chÃ o`), xem [sổ tay kiến thức chung](../common_knowledge.md#java-có-file-cấu-hình-kiểu-ini-của-php-key--value-không-có-cần-tự-viết-hàm-đọc-chung-không). Ở đây ta tự đọc nên chọn được bảng mã.
+- **Đọc theo UTF-8.** Nếu nạp `.properties` theo cách mặc định của Spring Boot thì giá trị tiếng Việt bị lỗi font (`Xin chào` → `Xin chÃ o`), xem [sổ tay kiến thức chung](../cong-nghe/spring-boot.md#java-có-file-cấu-hình-kiểu-ini-của-php-key--value-không-có-cần-tự-viết-hàm-đọc-chung-không). Ở đây ta tự đọc nên chọn được bảng mã.
 - **`addLast`** đặt các file này ở **cuối hàng ưu tiên**. Spring tìm một key từ trên xuống: tham số dòng lệnh → biến môi trường → `application.yml` → `config/*.properties`. Thấy ở đâu trước thì lấy ở đó. Vì vậy muốn ghi đè tạm mà không sửa file, chỉ cần đặt biến môi trường, ví dụ `APP_STATS_TOPLIMIT=10` (viết hoa, dấu `.` thành `_`, bỏ dấu `-`).
 
 ### ④ `common/AppConfig.java`: hàm đọc cấu hình dùng chung
@@ -406,7 +406,7 @@ Thêm/sửa ảnh sản phẩm vẫn chạy như cũ. Không thấy dòng `[Conf
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Các hàm dưới đây **không phải do mình viết**, mà có sẵn trong Java hoặc Spring. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Các hàm dưới đây **không phải do mình viết**, mà có sẵn trong Java hoặc Spring. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../kien-thuc/doc-bai-hoc-va-tra-cuu.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 **Trong `ModuleConfigLoader` (③)**
 
@@ -581,14 +581,14 @@ Mấy điểm cần để ý:
 - **`expire` gọi lại mỗi lần xem**, nên hạn `recent-ttl` (30 ngày) được tính từ **lần xem cuối**. User bỏ đi 30 ngày thì key tự biến mất, Redis không bị đầy dần bởi user cũ.
 - **Không còn con số nào viết cứng.** Ba giá trị đọc từ `config/stats.properties` qua `AppConfig`, còn `topProductIds()` không nhận tham số `limit` nữa: "Top mấy sản phẩm" là chuyện của module stats, nên `ProductViewController` không cần biết con số đó. Chỉ tên key vẫn là hằng số (lý do ở Bước 2).
 - **Dòng log trong constructor** in ra `[Stats] recent-ttl=PT720H, recent-limit=5, top-limit=5`. `PT720H` là cách Java in một `Duration` theo chuẩn ISO-8601: `P`eriod `T`ime 720 `H`ours, tức 720 giờ = 30 ngày.
-- **`catch (DataAccessException e)`**, không phải `catch (Exception e)`. Spring đổi mọi lỗi của Redis (mất kết nối, quá thời gian...) thành các lớp con của `DataAccessException`. Bắt đúng loại đó thì những lỗi do **code sai** (ví dụ `NullPointerException`) vẫn hiện ra cho bạn thấy, thay vì bị lặng lẽ nuốt mất. Xem thêm: [`catch (IOException e)` và `catch (Exception e)` khác nhau thế nào?](../common_knowledge.md#catch-ioexception-e-và-catch-exception-e-khác-nhau-thế-nào).
+- **`catch (DataAccessException e)`**, không phải `catch (Exception e)`. Spring đổi mọi lỗi của Redis (mất kết nối, quá thời gian...) thành các lớp con của `DataAccessException`. Bắt đúng loại đó thì những lỗi do **code sai** (ví dụ `NullPointerException`) vẫn hiện ra cho bạn thấy, thay vì bị lặng lẽ nuốt mất. Xem thêm: [`catch (IOException e)` và `catch (Exception e)` khác nhau thế nào?](../kien-thuc/java-ngoai-le.md#catch-ioexception-e-và-catch-exception-e-khác-nhau-thế-nào).
 - **Lỗi Redis → trả giá trị "rỗng"** (`0`, Map rỗng, List rỗng) và ghi `log.warn`. Đây chính là quy tắc 1 ở phần Tư vấn: dữ liệu phụ hỏng thì trang chính vẫn chạy. Còn nghiệp vụ chính (giá âm, không tìm thấy sản phẩm) thì vẫn ném lỗi như cũ.
 
 > `recordView()` gửi **5 lệnh riêng lẻ** tới Redis. Nếu Redis chết đúng giữa chừng, có thể lượt xem đã được cộng mà danh sách "vừa xem" chưa được cập nhật. Với dữ liệu phụ thì chuyện này chấp nhận được. Muốn gộp 5 lệnh thành 1 lần gửi, hoặc để chúng chạy "hoặc tất cả, hoặc không gì cả", xem bài tập 6.
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Các hàm dưới đây **không phải do mình viết**. Chúng nằm trong thư viện **Spring Data Redis** (có được nhờ dòng `spring-boot-starter-data-redis` trong `build.gradle`, bài 14) hoặc trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Các hàm dưới đây **không phải do mình viết**. Chúng nằm trong thư viện **Spring Data Redis** (có được nhờ dòng `spring-boot-starter-data-redis` trong `build.gradle`, bài 14) hoặc trong Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../kien-thuc/doc-bai-hoc-va-tra-cuu.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 #### Đọc một dòng gọi nối nhau: `redisTemplate.opsForZSet().incrementScore(...)`
 
@@ -660,7 +660,7 @@ Các lệnh **dùng được cho mọi kiểu dữ liệu** (đặt hạn, xoá 
 | `Long.valueOf(m)` | chuỗi → `Long`. Chuỗi không phải số thì ném `NumberFormatException` | `"12"` → `12` |
 | `views.longValue()` | `Double` → `long`, bỏ phần thập phân. Score trong Redis luôn là số thực nên phải đổi | `5.0` → `5` |
 
-> Các hàm Redis trả về **wrapper** (`Double`, `Long`, `Boolean`), không phải `double`, `long`, `boolean`. Lý do là trong vài chế độ đặc biệt (pipeline, transaction, xem bài tập 6) kết quả chưa có ngay, nên chúng trả về `null`. Bài này không dùng các chế độ đó. Phân biệt kiểu viết hoa và viết thường: xem [sổ tay](../common_knowledge.md#kiểu-dữ-liệu-viết-thường-int-long-và-viết-hoa-integer-long-string-duration-khác-nhau-thế-nào).
+> Các hàm Redis trả về **wrapper** (`Double`, `Long`, `Boolean`), không phải `double`, `long`, `boolean`. Lý do là trong vài chế độ đặc biệt (pipeline, transaction, xem bài tập 6) kết quả chưa có ngay, nên chúng trả về `null`. Bài này không dùng các chế độ đó. Phân biệt kiểu viết hoa và viết thường: xem [sổ tay](../kien-thuc/java-kieu-du-lieu.md#kiểu-dữ-liệu-viết-thường-int-long-và-viết-hoa-integer-long-string-duration-khác-nhau-thế-nào).
 
 ---
 
@@ -1166,6 +1166,6 @@ Xong thì trả về `30d` / `5` / `5`.
 7. **So sánh với MySQL**: thêm thử cột `views` vào `Product` và `UPDATE product SET views = views + 1` mỗi lần xem (xem phần Tư vấn). Bật `show-sql` (đã bật sẵn), mở trang chi tiết rồi đếm xem mỗi lượt xem tạo ra bao nhiêu câu SQL. Làm xong nhớ xoá cột đi (`ddl-auto: update` không tự xoá cột, xem bài 15 phần `@Column`).
 8. **Danh sách đuôi ảnh vào cấu hình**: `FileStorageService` vẫn còn viết cứng `Set.of("jpg", "jpeg", "png", "gif", "webp")`. Chuyển nó vào `config/upload.properties` thành `app.upload.allowed-extensions=jpg,jpeg,png,gif,webp`. Thêm vào `AppConfig` một hàm dùng chung `public Set<String> getStringSet(String key)`. Gợi ý: `env.getRequiredProperty(key, String[].class)` tự tách chuỗi theo dấu phẩy, rồi `Set.of(...)` mảng đó. Thử bỏ `gif` khỏi `config/upload.properties` rồi upload một ảnh `.gif`: phải bị từ chối. Câu hỏi: vì sao `URL_PREFIX = "/uploads/"` thì **không nên** đưa ra cấu hình? (Gợi ý: xem những class nào khác đang dùng nó.)
 
-➡️ Bài sau: [**17 — Viết code gọn hơn bằng Lombok: `@Slf4j`, `@Getter`, `@Setter`**](17-lombok-slf4j-getter-setter.md). Sau đó là **18 — Đánh giá sản phẩm bằng MongoDB** (`MongoRepository`, document lồng nhau, tính điểm trung bình).
+➡️ Bài sau: [**16.5 — Nâng cấp lên Spring Boot 4.1 và sửa các cú pháp đã bị khai tử**](16.5-nang-cap-spring-boot-4.md), rồi [**17 — Viết code gọn hơn bằng Lombok**](17-lombok-slf4j-getter-setter.md). Sau đó là **18 — Đánh giá sản phẩm bằng MongoDB** (`MongoRepository`, document lồng nhau, tính điểm trung bình).
 
 ➡️ Quay lại tổng quan: [../README.md](../../README.md)

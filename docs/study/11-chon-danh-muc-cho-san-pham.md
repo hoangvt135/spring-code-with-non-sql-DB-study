@@ -120,7 +120,7 @@ Cả hai form (thêm và sửa) đều dùng chung `products/form.html`, nên **
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Hàm có sẵn là hàm **không phải do mình viết**, mà có sẵn trong Java, Spring hoặc Thymeleaf. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../kien-thuc/doc-bai-hoc-va-tra-cuu.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 Bài này **không dùng hàm có sẵn nào mới**. Kiến thức mới nằm ở thuộc tính `th:each`, `th:selected`, toán tử `?.` và annotation `@RequestParam`, mà chúng đều không phải hàm.
 

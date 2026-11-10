@@ -105,7 +105,7 @@ File > 5MB (hoặc cả form > 6MB) → Tomcat từ chối trước khi tới co
 - [Cấu hình theo module](../common/cau-hinh-module.md): `AppConfig`, `config/upload.properties`.
 - [Đăng nhập & đăng ký](../user/dang-nhap-dang-ky.md): `SecurityConfig` mở quyền `/uploads/**`.
 - [Dữ liệu mẫu & reset](../seed/du-lieu-mau.md): script reset xoá ảnh.
-- Sổ tay: [`catch (IOException e)` và `catch (Exception e)`](../common_knowledge.md#catch-ioexception-e-và-catch-exception-e-khác-nhau-thế-nào), [lưu ảnh vào DB hay ra file](../common_knowledge.md#blob-là-gì-document-của-mongodb-có-phải-là-tài-liệu-lưu-ảnh-vào-db-hay-ra-file).
+- Sổ tay: [`catch (IOException e)` và `catch (Exception e)`](../kien-thuc/java-ngoai-le.md#catch-ioexception-e-và-catch-exception-e-khác-nhau-thế-nào), [lưu ảnh vào DB hay ra file](../cong-nghe/mongodb.md#blob-là-gì-document-của-mongodb-có-phải-là-tài-liệu-lưu-ảnh-vào-db-hay-ra-file).
 
 ## Lịch sử thay đổi
 

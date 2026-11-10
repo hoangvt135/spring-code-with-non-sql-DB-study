@@ -1,6 +1,6 @@
 # Trang lỗi 404 (NotFoundException)
 
-> **Module:** `common` (`NotFoundException`) + `templates/error/` · **Bài học nguồn:** [bài 10](../study/10-trang-404.md) · **Cập nhật:** 2026-11-10
+> **Module:** `common` (`NotFoundException`) + `templates/error/` · **Bài học nguồn:** [bài 10](../study/10-trang-404.md), [bài 16.5](../study/16.5-nang-cap-spring-boot-4.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** ✅ Hoàn thành — theo code thật ngày 2026-11-10
 
 ## Chức năng này làm gì
@@ -99,3 +99,4 @@ server:
 | [10](../study/10-trang-404.md) | Tạo `templates/error/404.html`, `common/NotFoundException`; `findById()` của 2 Service ném `NotFoundException`; bật `include-message: always` |
 | [12](../study/12-dang-nhap-spring-security.md) | `/error` được `permitAll()` |
 | [16](../study/16-luot-xem-top-san-pham-redis.md#bước-5--productviewcontroller-trang-chi-tiết) | Thêm `/products/{id}` (trang chi tiết), cũng ra 404 qua `findById()` |
+| [16.5](../study/16.5-nang-cap-spring-boot-4.md) | ⬜ Chưa làm. Spring Boot 4: `server.error.include-message` → `spring.web.error.include-message` (tên cũ bị bỏ qua → trang lỗi không hiện câu thông báo) |

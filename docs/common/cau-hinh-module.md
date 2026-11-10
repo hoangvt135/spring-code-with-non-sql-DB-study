@@ -1,6 +1,6 @@
 # Cấu hình theo module (`config/<module>.properties` + AppConfig)
 
-> **Module:** `common` (`ModuleConfigLoader`, `AppConfig`) · **Bài học nguồn:** [bài 16 Bước 2](../study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
+> **Module:** `common` (`ModuleConfigLoader`, `AppConfig`) · **Bài học nguồn:** [bài 16 Bước 2](../study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common), [bài 16.5](../study/16.5-nang-cap-spring-boot-4.md), [bài 17](../study/17-lombok-slf4j-getter-setter.md) · **Cập nhật:** 2026-11-10
 > **Trạng thái code:** ✅ Hoàn thành — theo code thật ngày 2026-11-10
 
 ## Chức năng này làm gì
@@ -92,7 +92,7 @@ Cú pháp file `.properties`:
 - [Lưu file upload](../storage/luu-file-upload.md): `app.upload.dir`.
 - [Quản lý sản phẩm](../product/quan-ly-san-pham.md): `app.product.default-image`.
 - [Lượt xem và top sản phẩm](../product/luot-xem-va-top-san-pham.md): `app.stats.*`.
-- Sổ tay: [Java có file cấu hình kiểu `.ini` không?](../common_knowledge.md#java-có-file-cấu-hình-kiểu-ini-của-php-key--value-không-có-cần-tự-viết-hàm-đọc-chung-không), [`@ConfigurationProperties` là gì? (cách đã bỏ)](../common_knowledge.md#mỗi-module-một-class-cấu-hình-riêng-statsproperties-productproperties-được-không-configurationproperties-là-gì), [`@Value` có đọc được `Duration` không?](../common_knowledge.md#đưa-hằng-số-ví-dụ-recent_ttl-30-ngày-sang-applicationyml-được-không-value-có-đọc-được-duration-không).
+- Sổ tay: [Java có file cấu hình kiểu `.ini` không?](../cong-nghe/spring-boot.md#java-có-file-cấu-hình-kiểu-ini-của-php-key--value-không-có-cần-tự-viết-hàm-đọc-chung-không), [`@ConfigurationProperties` là gì? (cách đã bỏ)](../cong-nghe/spring-boot.md#mỗi-module-một-class-cấu-hình-riêng-statsproperties-productproperties-được-không-configurationproperties-là-gì), [`@Value` có đọc được `Duration` không?](../cong-nghe/spring-boot.md#đưa-hằng-số-ví-dụ-recent_ttl-30-ngày-sang-applicationyml-được-không-value-có-đọc-được-duration-không).
 
 ## Lịch sử thay đổi
 
@@ -100,4 +100,5 @@ Cú pháp file `.properties`:
 |---|---|
 | [15](../study/15-anh-va-mo-ta-san-pham.md#bước-1--cấu-hình-trong-applicationyml) | Cấu hình `app.upload.dir`, `app.product.default-image` nằm trong khối `app:` của `application.yml`, đọc bằng `@Value` |
 | [16 Bước 2](../study/16-luot-xem-top-san-pham-redis.md#bước-2--mỗi-module-một-file-properties-đọc-qua-package-common) | Tách ra `config/{upload,product,stats}.properties`; thêm `ModuleConfigLoader`, `spring.factories`, `AppConfig`; bỏ khối `app:`; xoá `stats/StatsProperties.java` |
+| [16.5](../study/16.5-nang-cap-spring-boot-4.md) | ⬜ Chưa làm. Spring Boot 4: `ModuleConfigLoader` import `org.springframework.boot.EnvironmentPostProcessor` (package cũ `...boot.env` bị đánh dấu sẽ xoá); key trong `META-INF/spring.factories` đổi theo. `DeferredLogFactory` không đổi |
 | [17](../study/17-lombok-slf4j-getter-setter.md) | Không đổi code. `ModuleConfigLoader` **giữ** `DeferredLogFactory`, không dùng `@Slf4j`, vì nó chạy trước khi hệ thống log sẵn sàng |

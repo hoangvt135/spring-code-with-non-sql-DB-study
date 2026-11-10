@@ -150,13 +150,13 @@ Dòng log sẽ có đủ thời gian, mức độ (`INFO`), tên class, giống 
 
 ### 📖 Tra cứu: các hàm có sẵn dùng trong bước này
 
-Các hàm dưới đây **không phải do mình viết**. Chúng có sẵn trong **Spring Boot**, **Spring Data JPA**, thư viện log **SLF4J** (Spring Boot kèm sẵn, không phải thêm vào `build.gradle`) hoặc Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../common_knowledge.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
+Các hàm dưới đây **không phải do mình viết**. Chúng có sẵn trong **Spring Boot**, **Spring Data JPA**, thư viện log **SLF4J** (Spring Boot kèm sẵn, không phải thêm vào `build.gradle`) hoặc Java. Cách tự nhận biết và tự tra một hàm lạ: xem [sổ tay kiến thức chung](../kien-thuc/doc-bai-hoc-va-tra-cuu.md#hàm-có-sẵn-của-thư-viện-ví-dụ-opsforzset-ở-đâu-ra-làm-sao-biết-nó-làm-gì).
 
 | Hàm | Của ai | Làm gì | Trả về |
 |---|---|---|---|
-| `run(String... args)` | interface `CommandLineRunner` (Spring Boot) | Tên hàm và tham số do Spring Boot quy định, mình chỉ viết thân hàm (vì thế có `@Override`). Spring Boot tự gọi **đúng một lần**, sau khi app khởi động xong. `args` là các tham số dòng lệnh lúc chạy app, bài này không dùng (xem `String...` trong [sổ tay](../common_knowledge.md#string-args-3-dấu-chấm-trong-run-là-gì)). Nếu `run()` ném lỗi thì app **dừng khởi động** | `void`. Interface khai báo `throws Exception`, nhưng `run()` của mình không ném checked exception nào nên không cần ghi |
+| `run(String... args)` | interface `CommandLineRunner` (Spring Boot) | Tên hàm và tham số do Spring Boot quy định, mình chỉ viết thân hàm (vì thế có `@Override`). Spring Boot tự gọi **đúng một lần**, sau khi app khởi động xong. `args` là các tham số dòng lệnh lúc chạy app, bài này không dùng (xem `String...` trong [sổ tay](../kien-thuc/java-ham-method.md#string-args-3-dấu-chấm-trong-run-là-gì)). Nếu `run()` ném lỗi thì app **dừng khởi động** | `void`. Interface khai báo `throws Exception`, nhưng `run()` của mình không ném checked exception nào nên không cần ghi |
 | `LoggerFactory.getLogger(DataSeeder.class)` | SLF4J (`org.slf4j`), hàm `static` | Tạo một logger mang tên class. `DataSeeder.class` là cách truyền "chính class `DataSeeder`" vào làm tham số. Tên này hiện ở mỗi dòng log, ví dụ `c.example.demo.seed.DataSeeder` (Spring viết tắt tên package cho gọn) | `Logger` |
-| `log.info("...")` | `Logger` (SLF4J) | Ghi một dòng log ở mức `INFO`. Các mức khác: `log.debug`, `log.warn`, `log.error`. Chèn biến vào câu log bằng `{}`: xem [sổ tay](../common_knowledge.md#dấu--trong-loginfo--logwarn-là-gì) | `void` |
+| `log.info("...")` | `Logger` (SLF4J) | Ghi một dòng log ở mức `INFO`. Các mức khác: `log.debug`, `log.warn`, `log.error`. Chèn biến vào câu log bằng `{}`: xem [sổ tay](../cong-nghe/logging.md#dấu--trong-loginfo--logwarn-là-gì) | `void` |
 
 ---
 
